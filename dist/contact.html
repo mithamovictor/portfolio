@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Victor Mithamo</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
+      crossorigin="anonymous">
+    <link rel="stylesheet" href="css/app.css">
+	
+	<link rel="apple-touch-icon" sizes="180x180" href="./img/favicon/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="./img/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="./img/favicon/favicon-16x16.png">
+	<link rel="manifest" href="./img/favicon/site.webmanifest">
+	<link rel="mask-icon" href="./img/favicon/safari-pinned-tab.svg" color="#000000">
+	<meta name="msapplication-TileColor" content="#000000">
+	<meta name="theme-color" content="#000000">
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <!-- Start off-canvas -->
+    <div id="mySidenav" class="sidenav">
+      <nav>
+        <div class="closebtn">
+          <span><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></span>
+        </div>
+        <div class="portrait">
+          <img src="img/vic.jpg" alt="picture of victor" width="100%" height="auto">
+        </div>
+        <ul class="menu">
+          <li><a href="index.html" onclick="closeNav()">Home</a></li>
+          <li><a href="about.html" onclick="closeNav()">About</a></li>
+          <li><a href="portfolio.html" onclick="closeNav()">Portfolio</a></li>
+          <li><a href="contact.html" onclick="closeNav()">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+    <!-- End off-canvas -->
+    
+    <main>
+      <header>
+        <div class="menu-button">
+          <span class="mobile-button" onclick="openNav()"><img src="./img/icons/menu.svg" alt="menu icon" width="100%" height="auto"/></span>
+        </div>
+      </header>
+      <div class="body-content">
+        <h1>Contact <span class="yellow">Me</span></h1>
+        <p><span><i class="fas fa-envelope"></i></span> : <a class="yellow" href="mailto:vickarungaru@gmail.com">vickarungaru@gmail.com</a></p>
+        <p><span><i class="fas fa-phone-volume"></i></span> : <a class="yellow" href="tel:+254722402438">+254-722-402-438</a></p>
+        <p><span><i class="fab fa-telegram"></i></span> : <a class="yellow" href="https://t.me/KarungaruM">Telegram</a></p>
+      </div>
+    </main>
+    <footer>
+      <p>Copyright &copy; <script>document.write(new Date().getFullYear());</script></p>
+    </footer>
+    <script src="js/app.js" async defer></script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css?family=Aref+Ruqaa:400,700|Hind+Vadodara:400,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bonheur+Royale&display=swap');
+
+$black: #0a0a0a;
+$white: #fefefe;
+$gray: #cecece;
+$yellow: #eece1a;
+$dark-gray: #191919;
+$red: #ff0000;
+// $home-image: url(../img/background.jpg);
+$home-image: url(../img/bg.jpg);
+$body-font: 'Hind Vadodara', sans-serif;
+$header-font: 'Aref Ruqaa', serif;
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: $header-font;
+}
+
+a {
+	text-decoration: none;
+}

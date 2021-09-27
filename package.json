@@ -1,48 +1,25 @@
 {
-  "name": "portfolio",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@craco/craco": "^6.3.0",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
-    "web-vitals": "^1.1.2"
-  },
-  "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test",
-    "eject": "react-scripts eject",
-    "predeploy": "craco build",
-    "deploy": "gh-pages -d build"
-  },
-  "homepage": "http://mithamovictor.github.io",
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "autoprefixer": "^9.8.7",
-    "postcss": "^7.0.38",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.16",
-    "gh-pages": "^3.2.3"
-  }
+	"name": "vic_portfolio",
+	"version": "1.0.0",
+	"description": "Vic portfolio website",
+	"main": "index.js",
+	"homepage": "https://bradtraversy.github.io/modern_portfolio",
+	"scripts": {
+		"start": "gulp build & gulp watch",
+		"build": "gulp build",
+		"sass": "node-sass -w scss/ -o dist/css/ --recursive",
+		"deploy": "gh-pages -d dist"
+	},
+	"author": "Victor Mithamo",
+	"license": "MIT",
+	"dependencies": {
+		"gh-pages": "^1.2.0",
+		"gulp": "^4.0.2",
+		"gulp-autoprefixer": "^7.0.1",
+		"gulp-clean-css": "^4.3.0",
+		"gulp-sass": "^4.1.0",
+		"gulp-sourcemaps": "^2.6.5",
+		"node-sass": "^4.9.2",
+		"rimraf": "^3.0.2"
+	}
 }

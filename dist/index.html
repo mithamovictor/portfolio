@@ -49,15 +49,15 @@
 		<div>
 			<div class="logo-container">
 				<a href="/">
-					<img class="logo" src="./img/logo.png" alt="logo">
+					<img class="logo" src="/img/logo.png" alt="logo">
 				</a>
 				<div class="menu-button">
-					<span class="mobile-button" onclick="openNav()"><img src="./img/icons/menu.svg" alt="menu icon" width="100%" height="auto"/></span>
+					<span class="mobile-button" onclick="openNav()"><img class="menu-icon" src="/img/icons/menu.svg" alt="menu icon" width="100%" height="auto"/></span>
 				</div>
 				<nav class="main-menu">
 					<ul class="menu">
-						<li><a href="index.html" onclick="closeNav()">Home</a></li>
-						<li><a href="about.html" onclick="closeNav()">About</a></li>
+						<li><a href="/" onclick="closeNav()">Home</a></li>
+						<li><a href="/#about" onclick="closeNav()">About</a></li>
 						<li><a href="portfolio.html" onclick="closeNav()">Portfolio</a></li>
 						<li><a href="contact.html" onclick="closeNav()">Contact</a></li>
 						<li><a target="_blank" rel="noopener noreferrer" href="./resume/resume.pdf" onclick="closeNav()">Resume</a></li>
@@ -67,9 +67,43 @@
 		</div>
 	</header>
     <main class="homepage">
-		<div class="banner-section">
-			
-		</div>
+		<section class="banner-section">
+			<div class="banner-text">
+				<h1>Frontend <span class="yellow">Engineer</span></h1>
+				<div class="home_text">
+					<p>Designer <span class="yellow">|</span> Developer <span class="yellow">|</span> Programmer</p>
+				</div>
+				<div class="social">
+					<a href="https://twitter.com/Karungaru_M" target="_blank" rel="noopener noreferrer">
+						<i class="fab fa-twitter fa-2x"></i>
+					</a>
+					<a href="https://codepen.io/karungarum" target="_blank" rel="noopener noreferrer">
+						<i class="fab fa-codepen fa-2x"></i>
+					</a>
+					<a href="https://www.linkedin.com/in/karungaru-mithamo-030646b1/" target="_blank" rel="noopener noreferrer">
+						<i class="fab fa-linkedin fa-2x"></i>
+					</a>
+					<a href="https://github.com/mithamovictor" target="_blank" rel="noopener noreferrer">
+						<i class="fab fa-github fa-2x"></i>
+					</a>
+				</div>
+			</div>
+			<div class="banner-container">
+				<img class="banner-mobile" src="/img/bg-mobile.jpg" alt="banner image" width="100%" height="auto">
+				<img class="banner-desktop" src="/img/bg.jpg" alt="banner image" width="100%" height="auto">
+			</div>
+		</section>
+		<section class="about-section" id="about">
+			<h2>About <span class="yellow">Me</span></h2>
+			<div class="about-me">
+				<img src="/img/vic_portfolio.png" alt="vic">
+				<p>I am a self taught programmer who enjoys programming for the web. I have gained experience and knowlege in various technologies that are in use in the modern world to develop web based solutions for both individuals and institutions.</p>
+			</div>
+			<h3>My <span class="yellow">Journey</span></h3>
+			<div class="journey">
+				<img src="./img/journey.png" alt="journey infographic">
+			</div>
+		</section>
     </main>
     <footer>
       <p>Copyright &copy; <script>document.write(new Date().getFullYear());</script></p>

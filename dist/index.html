@@ -33,42 +33,43 @@
           <span><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></span>
         </div>
         <div class="portrait">
-          <img src="img/vic.jpg" alt="picture of victor" width="100%" height="auto">
+          <img src="img/vic_portfolio.png" alt="picture of victor" width="100%" height="auto" />
         </div>
         <ul class="menu">
-          <li><a href="index.html" onclick="closeNav()">Home</a></li>
-          <li><a href="about.html" onclick="closeNav()">About</a></li>
-          <li><a href="portfolio.html" onclick="closeNav()">Portfolio</a></li>
-          <li><a href="contact.html" onclick="closeNav()">Contact</a></li>
+          <li><a href="/" onclick="closeNav()">Home</a></li>
+          <li><a href="/#about" onclick="closeNav()">About</a></li>
+          <li><a href="/#portfolio" onclick="closeNav()">Portfolio</a></li>
+          <li><a href="/#resume" onclick="closeNav()">Resume</a></li>
+          <li><a href="/#contact" onclick="closeNav()">Contact</a></li>
         </ul>
       </nav>
     </div>
     <!-- End off-canvas -->
-    
+
+	<!-- start of header section -->    
 	<header>
-		<div>
-			<div class="logo-container">
-				<a href="/">
-					<img class="logo" src="/img/logo.png" alt="logo">
-				</a>
-				<div class="menu-button">
-					<span class="mobile-button" onclick="openNav()"><img class="menu-icon" src="/img/icons/menu.svg" alt="menu icon" width="100%" height="auto"/></span>
-				</div>
-				<nav class="main-menu">
-					<ul class="menu">
-						<li><a href="/" onclick="closeNav()">Home</a></li>
-						<li><a href="/#about" onclick="closeNav()">About</a></li>
-						<li><a href="portfolio.html" onclick="closeNav()">Portfolio</a></li>
-						<li><a href="contact.html" onclick="closeNav()">Contact</a></li>
-						<li><a target="_blank" rel="noopener noreferrer" href="./resume/resume.pdf" onclick="closeNav()">Resume</a></li>
-					</ul>
-				</nav>
-			</div>
+		<a class="logo_link" href="/">
+			<img class="logo" src="img/logo.png" alt="logo" width="100%" height="auto" />
+		</a>
+		<div class="menu_button">
+			<i class="fas fa-bars menu_icon" onclick="openNav()"></i>
 		</div>
+		<nav class="main_menu">
+			<ul class="menu">
+				<li><a href="/">Home</a></li>
+				<li><a href="/#about">About</a></li>
+				<li><a href="/#portfolio">Portfolio</a></li>
+				<li><a href="/#resume">Resume</a></li>
+				<li><a href="/#contact">Contact</a></li>
+			</ul>
+		</nav>
 	</header>
+	<!-- End of header section -->
+
+	<!-- Start of main body -->
     <main class="homepage">
-		<section class="banner-section">
-			<div class="banner-text">
+		<section class="banner_section">
+			<div class="banner_text">
 				<h1>Frontend <span class="yellow">Engineer</span></h1>
 				<div class="home_text">
 					<p>Designer <span class="yellow">|</span> Developer <span class="yellow">|</span> Programmer</p>
@@ -88,26 +89,182 @@
 					</a>
 				</div>
 			</div>
-			<div class="banner-container">
-				<img class="banner-mobile" src="/img/bg-mobile.jpg" alt="banner image" width="100%" height="auto">
-				<img class="banner-desktop" src="/img/bg.jpg" alt="banner image" width="100%" height="auto">
+			<div class="banner_container">
+				<img class="banner_mobile" src="img/bg-mobile.jpg" alt="banner image" width="100%" height="auto" />
+				<img class="banner_desktop" src="img/bg.jpg" alt="banner image" width="100%" height="auto" />
 			</div>
 		</section>
-		<section class="about-section" id="about">
-			<h2>About <span class="yellow">Me</span></h2>
-			<div class="about-me">
-				<img src="/img/vic_portfolio.png" alt="vic">
+		<section class="about_section" id="about">
+			<h2 class="section_heading">About <span class="yellow">Me</span></h2>
+			<div class="about_me">
+				<img src="img/vic_portfolio.png" alt="photo of Karungaru Mithamo" width="100%" height="auto" />
 				<p>I am a self taught programmer who enjoys programming for the web. I have gained experience and knowlege in various technologies that are in use in the modern world to develop web based solutions for both individuals and institutions.</p>
 			</div>
 			<h3>My <span class="yellow">Journey</span></h3>
 			<div class="journey">
-				<img src="./img/journey.png" alt="journey infographic" width="100%" height="auto">
+				<img src="img/journey.png" alt="journey infographic" width="100%" height="auto" />
+			</div>
+			<h3>Technical <span class="yellow">Skills</span></h3>
+			<div class="tech_container">
+				<div class="tech_card">
+					<span class="icon">
+						<img src="img/icons/html.png" alt="html5 icon" width="100%" height="auto">
+					</span>
+					<div class="tech_title">
+						<h4>HTML</h4>
+					</div>
+				</div>
+				<div class="tech_card">
+					<span class="icon">
+						<img src="img/icons/css.png" alt="html5 icon" width="100%" height="auto">
+					</span>
+					<div class="tech_title">
+						<h4>CSS</h4>
+					</div>
+				</div>
+				<div class="tech_card">
+					<span class="icon">
+						<img src="img/icons/js.png" alt="html5 icon" width="100%" height="auto">
+					</span>
+					<div class="tech_title">
+						<h4>JS</h4>
+					</div>
+				</div>
+				<div class="tech_card">
+					<span class="icon">
+						<img src="img/icons/sass.png" alt="html5 icon" width="100%" height="auto">
+					</span>
+					<div class="tech_title">
+						<h4>SCSS</h4>
+					</div>
+				</div>
+				<div class="tech_card">
+					<span class="icon">
+						<img src="img/icons/php.png" alt="html5 icon" width="100%" height="auto">
+					</span>
+					<div class="tech_title">
+						<h4>PHP</h4>
+					</div>
+				</div>
+				<div class="tech_card">
+					<span class="icon">
+						<img src="img/icons/react.png" alt="html5 icon" width="100%" height="auto">
+					</span>
+					<div class="tech_title">
+						<h4>React</h4>
+					</div>
+				</div>
+				<div class="tech_card">
+					<span class="icon">
+						<img src="img/icons/wordpress.png" alt="html5 icon" width="100%" height="auto">
+					</span>
+					<div class="tech_title">
+						<h4>Wordpress</h4>
+					</div>
+				</div>
+				<div class="tech_card">
+					<span class="icon">
+						<img src="img/icons/mysql.png" alt="html5 icon" width="100%" height="auto">
+					</span>
+					<div class="tech_title">
+						<h4>mySQL</h4>
+					</div>
+				</div>
+				<div class="tech_card">
+					<span class="icon">
+						<img src="img/icons/nodejs.png" alt="html5 icon" width="100%" height="auto">
+					</span>
+					<div class="tech_title">
+						<h4>NodeJS</h4>
+					</div>
+				</div>
+				<div class="tech_card">
+					<span class="icon">
+						<img src="img/icons/foundation.png" alt="html5 icon" width="100%" height="auto">
+					</span>
+					<div class="tech_title">
+						<h4>ZURB Foundation</h4>
+					</div>
+				</div>
+				<div class="tech_card">
+					<span class="icon">
+						<img src="img/icons/tailwind.png" alt="html5 icon" width="100%" height="auto">
+					</span>
+					<div class="tech_title">
+						<h4>Tailwind CSS</h4>
+					</div>
+				</div>
+				<div class="tech_card">
+					<span class="icon">
+						<img src="img/icons/bootstrap.png" alt="html5 icon" width="100%" height="auto">
+					</span>
+					<div class="tech_title">
+						<h4>Bootstrap</h4>
+					</div>
+				</div>
+			</div>
+		</section>
+		<section class="portfolio_section" id="portfolio">
+			<h2 class="section_heading">Past <span class="yellow">Projects</span></h2>
+		</section>
+		<section class="resume_section" id="resume">
+			<h2 class="section_heading">My <span class="yellow">Resume</span></h2>
+			<div class="resume">
+				<p>You can view my resume here.</p>
+				<span class="arrow_down">
+					<i class="far fa-arrow-alt-circle-down"></i>
+				</span>
+				<a class="resume_btn" href="resume/resume.pdf" target="_blank" rel="noopener noreferrer">
+					<i class="fas fa-download"></i>
+				</a>
+			</div>
+		</section>
+		<section class="contact_section" id="contact">
+			<h2 class="section_heading">Contact <span class="yellow">Me</span></h2>
+			<div class="contact_details">
+				<div class="contact_box">
+					<div class="contact_icon">
+						<i class="fas fa-envelope yellow"></i>
+					</div>
+					<div class="contact">
+						<p class="yellow">vickarungaru@gmail.com</p>
+					</div>
+				</div>
+				<div class="contact_box">
+					<div class="contact_icon">
+						<i class="fas fa-phone-volume yellow"></i>
+					</div>
+					<div class="contact">
+						<p class="yellow">+254722402438</p>
+					</div>
+				</div>
+				<div class="contact_box">
+					<div class="contact_icon">
+						<i class="fab fa-skype yellow"></i>
+					</div>
+					<div class="contact">
+						<p class="yellow">vickarungaru_2</p>
+					</div>
+				</div>
+			</div>
+			<div class="contact_form">
+				<form>
+					<input type="text" name="name" id="name" placeholder="Name">
+					<input type="email" name="email" id="email" placeholder="Email">
+					<textarea name="message" id="message" rows="8" placeholder="Message"></textarea>
+					<input class="submit" type="submit" name="submit" value="Submit" />
+				</form>
 			</div>
 		</section>
     </main>
+	<!-- End of main body -->
+
+	<!-- Start of footer section -->
     <footer>
       <p>Copyright &copy; <script>document.write(new Date().getFullYear());</script></p>
     </footer>
+	<!-- End of footer section -->
+
     <script src="js/app.js" async defer></script>
   </body>
 </html>

@@ -4,13 +4,19 @@
 $black: #0a0a0a;
 $white: #fefefe;
 $gray: #cecece;
-$yellow: #eece1a;
+$yellow: #ffcc00;
 $dark-gray: #191919;
 $red: #ff0000;
+// $blue: #000027;
+$blue: #020216;
 // $home-image: url(../img/background.jpg);
-$home-image: url(../img/bg.jpg);
+// $home-image: url(../img/bg.jpg);
 $body-font: 'Hind Vadodara', sans-serif;
 $header-font: 'Aref Ruqaa', serif;
+$title-font: 'Bonheur Royale', cursive;
+$global-font-size: 1rem;
+$global-margin: 1rem;
+$global-padding: 1rem;
 
 h1,
 h2,
@@ -18,7 +24,48 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: $header-font;
+	text-align: center;
+	font-family: $header-font;
+	margin: $global-margin * 1.5 0;
+}
+
+h1 {
+	font-size: $global-font-size * 3;
+
+	@media screen and (min-width: 768px) {
+		font-size: $global-font-size * 4;
+	}
+}
+
+h2 {
+	font-size: $global-font-size * 2.5;
+	border-top: 1px dotted $yellow;
+	border-bottom: 1px dotted $yellow;
+	padding: $global-padding/2 0 $global-padding;
+
+	@media screen and (min-width: 768px) {
+		font-size: $global-font-size * 3;
+	}
+}
+
+h3 {
+	font-size: $global-font-size * 2;
+	border-top: 1px dotted $yellow;
+	border-bottom: 1px dotted $yellow;
+	padding: $global-padding/2 0 $global-padding;
+
+	@media screen and (min-width: 768px) {
+		font-size: $global-font-size * 2.5;
+	}
+}
+
+h4 {
+	font-size: $global-font-size * 1.8;
+	padding: $global-padding/2 0 $global-padding;
+
+	@media screen and (min-width: 768px) {
+		font-size: $global-font-size * 2;
+	}
 }
 
 a {

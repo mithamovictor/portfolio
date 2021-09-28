@@ -173,7 +173,7 @@ main {
 		align-items: center;
 		width: 100%;
 		max-width: 1000px;
-		margin: $global-margin * 3 auto;
+		margin: $global-margin * 2 auto;
 		padding: $global-padding;
 
 		&.banner_section {
@@ -360,7 +360,72 @@ main {
 			}
 		}
 
-		// &.portfolio_section {}
+		&.projects_section {
+			.projects_container {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				width: 100%;
+
+				@media screen and (min-width: 768px) {
+					flex-direction: row;
+					justify-content: space-between;
+					flex-wrap: wrap;
+				}
+
+				.project_card {
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					width: 100%;
+					max-width: 290px;
+					background-color: #18192e;
+					border: {
+						bottom: 0.3rem solid $yellow;
+						radius: 0.2rem;
+					}
+					overflow: hidden;
+					position: relative;
+					margin: $global-margin;
+
+					.project_meta {
+						display: flex;
+						flex-direction: column;
+						justify-content: center;
+						align-items: center;
+						padding: $global-padding / 2;
+						position: absolute;
+						bottom: 0;
+						left: 0;
+						background-color: rgba($blue, 0.9);
+						width: 100%;
+
+						p {
+							margin-bottom: $global-margin / 2;
+						}
+
+						a {
+							color: $gray;
+							border: {
+								top: 1px dotted $yellow;
+								bottom: 1px dotted $yellow;
+							}
+
+							&:hover {
+								color: $yellow;
+							}
+
+							i {
+								margin-left: $global-margin;
+								font-size: $global-font-size * 0.8;
+							}
+						}
+					}
+				}
+			}
+		}
+
 		&.resume_section {
 			.resume {
 				display: flex;
@@ -527,8 +592,12 @@ footer {
 	justify-content: center;
 	align-items: center;
 	width: 100%;
-	border-top: 1px solid $gray;
+	border-top: 1px solid darken($gray, 70%);
 	padding: $global-padding * 2 $global-padding;
+
+	p {
+		color: darken($gray, 60%);
+	}
 }
 // Global classes
 .yellow {

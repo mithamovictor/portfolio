@@ -361,7 +361,45 @@ main {
 		}
 
 		// &.portfolio_section {}
-		// &.resume_section {}
+		&.resume_section {
+			.resume {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+
+				p {
+					margin-bottom: $global-margin;
+				}
+
+				.arrow_down {
+					margin: $global-margin 0;
+					max-width: 1.5rem;
+				}
+
+				a {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					padding: $global-padding / 2;
+					margin: $global-margin 0;
+					background: $yellow;
+					border-radius: 0.2rem;
+					width: 100%;
+					max-width: 200px;
+					color: $blue;
+					font: {
+						size: $global-font-size * 1.2;
+						weight: bold;
+					}
+
+					i {
+						margin-left: $global-margin;
+						font-size: $global-font-size * 1.2;
+					}
+				}
+			}
+		}
 
 		&.contact_section {
 			.contact_details {

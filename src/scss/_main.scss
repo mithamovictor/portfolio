@@ -1,6 +1,7 @@
 * {
 	box-sizing: border-box;
 	line-height: 1.2;
+  scroll-behavior: smooth
 }
 
 body {
@@ -35,15 +36,12 @@ body {
 		padding: $global-padding;
 		width: 100%;
 
-		.closebtn {
+		.close_btn {
 			display: flex;
 			justify-content: flex-end;
-
-			a {
-				text-decoration: none;
-				font-size: $global-font-size * 3;
-				color: $yellow;
-			}
+      text-decoration: none;
+      font-size: $global-font-size * 3;
+      color: $yellow;
 		}
 
 		.portrait {
@@ -512,7 +510,6 @@ main {
 						justify-content: center;
 						align-items: center;
 						width: 100%;
-						// border: 1px dotted $yellow;
 						padding: $global-padding / 2;
 					}
 				}
@@ -529,7 +526,7 @@ main {
 					display: flex;
 					flex-direction: column;
 					justify-content: center;
-					align-items: center;
+					align-items: flex-start;
 					width: 100%;
 					max-width: 500px;
 					padding: $global-padding;
@@ -540,7 +537,7 @@ main {
 						background-color: #18192e;
 						border-radius: 0.2rem;
 						border: 0;
-						margin-bottom: $global-margin;
+						margin-top: $global-margin;
 						padding: $global-padding;
 						width: 100%;
 						color: $gray;
@@ -548,13 +545,20 @@ main {
 							family: $body-font;
 							size: $global-font-size;
 						}
+
+            &:focus,
+            &:active,
+            &:hover {
+              border: 0;
+              outline: none;
+            }
 					}
 
 					textarea {
 						background-color: #18192e;
 						border-radius: 0.2rem;
 						border: 0;
-						margin-bottom: $global-margin;
+						margin-top: $global-margin;
 						padding: $global-padding;
 						width: 100%;
 						color: $gray;
@@ -562,7 +566,19 @@ main {
 							family: $body-font;
 							size: $global-font-size;
 						}
+
+            &:focus,
+            &:active,
+            &:hover {
+              border: 0;
+              outline: none;
+            }
 					}
+
+          .form_error {
+            color: #a91717;
+            font-size: $global-font-size * 0.8;
+          }
 
 					.submit {
 						display: flex;
@@ -577,6 +593,7 @@ main {
 						}
 						width: 100%;
 						color: $white;
+            margin: $global-margin 0;
 
 						&:active,
 						&:focus {
@@ -602,6 +619,7 @@ footer {
 		color: darken($gray, 60%);
 	}
 }
+
 // Global classes
 .yellow {
 	color: $yellow;

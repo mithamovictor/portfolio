@@ -18,9 +18,6 @@ class OffCanvas extends Component {
           <div className="close_btn">
             <span className="close_btn" onClick={this.closeNav}>&times;</span>
           </div>
-          <div className="portrait">
-            <img src="img/vic_portfolio.png" alt="Karungaru Mithamo" width="100%" height="auto" />
-          </div>
           <ul className="menu">
             <li><Link to="home" spy={true} smooth={true} offset={-70} onSetActive={this.closeNav}>Home</Link></li>
             <li><Link to="about" spy={true} smooth={true} offset={-70} onSetActive={this.closeNav}>About</Link></li>

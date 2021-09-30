@@ -44,17 +44,6 @@ body {
       color: $yellow;
 		}
 
-		.portrait {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-
-			img {
-				width: 100%;
-				max-width: 100px;
-			}
-		}
-
 		.menu {
 			display: flex;
 			flex-direction: column;
@@ -284,15 +273,6 @@ main {
 				align-items: center;
 				margin-bottom: $global-margin * 2;
 
-				img {
-					max-width: 150px;
-					margin: $global-margin * 2 0;
-
-					@media screen and (min-width: 768px) {
-						max-width: 200px;
-					}
-				}
-
 				p {
 					max-width: 500px;
 					text-align: justify;
@@ -449,15 +429,24 @@ main {
 					align-items: center;
 					padding: $global-padding / 2;
 					margin: $global-margin 0;
-					background: $yellow;
+					background-color: transparent;
 					border-radius: 0.2rem;
+          border: 1px dashed $yellow;
 					width: 100%;
 					max-width: 200px;
-					color: $blue;
+					color: $yellow;
 					font: {
 						size: $global-font-size * 1.2;
 						weight: bold;
 					}
+
+          &:hover,
+          &:focus,
+          &:active {
+            background-color: $yellow;
+            color: $blue;
+            border: 1px solid $yellow;
+          }
 
 					i {
 						margin-left: $global-margin;
@@ -585,19 +574,24 @@ main {
 						justify-content: center;
 						align-items: center;
 						padding: $global-padding / 2;
-						background-color: darken(#18192e, 2%);
-						box-shadow: 2px 2px 4px -3px $gray;
+						background-color: transparent;
 						border: {
-							width: 0;
+							width: 1px;
+              style: dashed;
+              color: $yellow;
 							radius: 0.2rem;
 						}
 						width: 100%;
-						color: $white;
+						color: $yellow;
+            font-weight: bold;
             margin: $global-margin 0;
 
 						&:active,
+            &:hover,
 						&:focus {
-							box-shadow: 2px 2px 4px -3px $gray;
+							border: 1px solid $yellow;
+              color: $blue;
+              background-color: $yellow;
 						}
 					}
 				}

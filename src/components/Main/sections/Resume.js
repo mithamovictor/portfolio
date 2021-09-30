@@ -7,7 +7,7 @@ const Resume = () => {
       <div className="resume">
         <p>You can view my resume here.</p>
         <img className="arrow_down" src="img/arrow.png" alt="arrow down" width="100%" height="auto" />
-        <a className="resume_btn" href="resume/resume.pdf" target="_blank" rel="noopener noreferrer">
+        <a className="resume_btn" href="resume/Resume.pdf" target="_blank" rel="noopener noreferrer">
           Download<i className="fas fa-download"></i>
         </a>
       </div>

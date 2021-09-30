@@ -6,7 +6,6 @@ const About = () => {
     <section className="about_section" id="about">
       <h2 className="section_heading">About <span className="yellow">Me</span></h2>
       <div className="about_me">
-        <img src="img/vic_portfolio.png" alt="Karungaru Mithamo" width="100%" height="auto" />
         <p>I am a self taught programmer who enjoys programming for the web. I have gained experience and knowlege in various technologies that are in use in the modern world to develop web based solutions for both individuals and institutions.</p>
       </div>
       <h3>My <span className="yellow">Journey</span></h3>

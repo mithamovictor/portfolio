@@ -7,6 +7,7 @@ const Projects  = () => {
       <h2 className="section_heading">Past <span className="yellow">Projects</span></h2>
       <div className="projects_container">
         <ProjectCard src="img/sites/portfolio.png" alt="Karungaru Mithamo portfolio website" title="Karungaru Mithamo's Portfolio" url="http://mithamovictor.github.io" />
+        <ProjectCard src="img/sites/dgmc.png" alt="Clinic Management System" title="DGMC Client Management System" url="javascript:void(0)" />
         <ProjectCard src="img/sites/stb_games.png" alt="Spot the ball games website" title="Spot The Ball - Games Website" url="http://games.spottheball.co.ke" />
         <ProjectCard src="img/sites/stb_premium.png" alt="Spot the ball premium gaming website" title="Spot The Ball - Premium Website" url="http://premium.spottheball.co.ke" />
         <ProjectCard src="img/sites/ap.png" alt="Academic Prowess website" title="Academic Prowess" url="http://academicprowess.com" />

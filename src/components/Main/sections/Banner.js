@@ -4,7 +4,7 @@ const Banner = () => {
   return (
     <section className="banner_section" id="home">
       <div className="banner_text">
-        <h1>Frontend <span className="yellow">Engineer</span></h1>
+        <h1>Fullstack <span className="yellow">Developer</span></h1>
         <div className="home_text">
           <p>Designer <span className="yellow">|</span> Developer <span className="yellow">|</span> Programmer</p>
         </div>

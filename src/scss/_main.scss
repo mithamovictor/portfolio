@@ -16,6 +16,10 @@ body {
 	margin: 0;
 	padding: 0;
 	color: $gray;
+
+  a {
+    cursor: pointer;
+  }
 }
 
 .sidenav {
@@ -481,6 +485,13 @@ main {
 					background-color: #0a0a1a;
 					border-radius: 1rem;
 					max-width: 300px;
+          border: 1px dotted transparent;
+
+          &:active,
+          &:hover,
+          &:focus {
+            border: 1px dotted $yellow;
+          }
 
 					.contact_icon {
 						display: flex;

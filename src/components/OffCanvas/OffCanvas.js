@@ -23,7 +23,7 @@ class OffCanvas extends Component {
             <li><Link to="about" spy={true} smooth={true} offset={-70} onSetActive={this.closeNav}>About</Link></li>
             <li><Link to="portfolio" spy={true} smooth={true} offset={-70} onSetActive={this.closeNav}>Portfolio</Link></li>
             <li><Link to="resume" spy={true} smooth={true} offset={-70} onSetActive={this.closeNav}>Resume</Link></li>
-            <li><Link to="contact" spy={true} smooth={true} offset={-70} onSetActive={this.closeNav}>Contact</Link></li>
+            <li><Link to="contact" spy={true} smooth={true} offset={-70} onSetActive={this.closeNav}>Hire Me</Link></li>
           </ul>
         </nav>
       </div>

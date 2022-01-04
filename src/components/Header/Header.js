@@ -27,7 +27,7 @@ class Header extends Component {
             <li><Link to="about" spy={true} smooth={true} offset={-80}>About</Link></li>
             <li><Link to="portfolio" spy={true} smooth={true} offset={-80}>Portfolio</Link></li>
             <li><Link to="resume" spy={true} smooth={true} offset={-80}>Resume</Link></li>
-            <li><Link to="contact" spy={true} smooth={true} offset={-80}>Contact</Link></li>
+            <li><Link to="contact" spy={true} smooth={true} offset={-80}>Hire Me</Link></li>
           </ul>
         </nav>
       </header>

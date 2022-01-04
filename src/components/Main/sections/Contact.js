@@ -4,7 +4,7 @@ import ContactForm from './partials/ContactForm'
 const Contact = () => {
   return (
     <section className="contact_section" id="contact">
-      <h2 className="section_heading">Contact <span className="yellow">Me</span></h2>
+      <h2 className="section_heading">Hire <span className="yellow">Me</span></h2>
       <div className="contact_details">
         <div className="contact_box">
           <div className="contact_icon">

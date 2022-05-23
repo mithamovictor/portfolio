@@ -8,23 +8,28 @@ module.exports = {
     },
     backgroundColor: (theme) => ({
       ...theme("colors"),
-      altpurple: "#440055",
+      cream: "#deaa87",
+      chocolate: "#483737",
     }),
     textColor: (font) => ({
       ...font("colors"),
+      cream: "#deaa87",
+      chocolate: "#483737",
     }),
     borderColor: (border) => ({
       ...border("colors"),
+      cream: "#deaa87",
+      chocolate: "#483737",
     }),
-    maxWidth: {
-      500: "500px",
-      80: "80px",
-    },
-    minWidth: {
-      500: "500px",
-      80: "80px",
-    },
     extend: {
+      minWidth: {
+        screen: "100vw",
+        500: "500px",
+        80: "80px",
+      },
+      maxWidth: {
+        "side-bar": "300px",
+      },
       zIndex: {
         1: "1",
         2: "2",

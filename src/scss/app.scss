@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: "Poppins", sans-serif;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+}
+
+.logo {
+  max-width: 120px;
+}
+
+.pic {
+  max-width: 100px;
+}
+
+@media screen and (min-width: 768px) {
+  .logo {
+    max-width: 150px;
+  }
+}

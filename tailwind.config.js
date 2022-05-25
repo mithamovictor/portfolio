@@ -24,11 +24,14 @@ module.exports = {
     extend: {
       minWidth: {
         screen: "100vw",
+        "screen-sm": "20rem",
         500: "500px",
         80: "80px",
       },
       maxWidth: {
         "side-bar": "300px",
+        icon: "50px",
+        "1/2": "50%",
       },
       zIndex: {
         1: "1",

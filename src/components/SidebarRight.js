@@ -1,17 +1,28 @@
+import Image from "./Image";
+import SocialIcons from "./SocialIcons";
 import ToggleThemeButton from "./ToggleThemeButton";
 
 const SidebarRight = (props) => {
   const { url, alt, width, height, lazyLoading } = props.logo;
+  const socialIcons = [
+    { url: "https://twitter.com/Karungaru_M", iconClass: "fab fa-twitter" },
+    { url: "https://codepen.io/karungarum", iconClass: "fab fa-codepen" },
+    {
+      url: "https://www.linkedin.com/in/karungaru-mithamo-030646b1/",
+      iconClass: "fab fa-linkedin",
+    },
+    { url: "https://github.com/mithamovictor", iconClass: "fab fa-github" },
+  ];
   return (
-    <div className="flex flex-col justify-start lg:justify-center items-center w-full lg:max-w-side-bar p-4">
+    <div className="flex flex-col justify-start lg:justify-center items-center bg-gray-100 dark:bg-slate-900 w-full lg:max-w-side-bar p-4">
       <div className="flex w-full justify-between items-center my-8">
-        <img
+        <Image
           className="logo"
           src={url}
           alt={alt}
           width={width}
           height={height}
-          loading={lazyLoading ? "lazy" : ""}
+          loading={lazyLoading}
         />
         <ToggleThemeButton />
       </div>
@@ -24,19 +35,19 @@ const SidebarRight = (props) => {
         (&nbsp;Victor&nbsp;)
       </h2>
       <ul className="flex flex-col w-full my-8 text-center italic text-sm">
-        <li className="flex justify-center items-center w-full relative my-4">
+        <li className="flex justify-center items-center w-full relative my-6">
           <p className="flex absolute bg-cream text-chocolate dark:text-slate-900 py-1 px-4 rounded-full">
             Full Stack Developer
           </p>
           <hr className="w-full text-gray-300 dark:text-gray-700" />
         </li>
-        <li className="flex justify-center items-center w-full relative my-4">
+        <li className="flex justify-center items-center w-full relative my-6">
           <p className="flex absolute bg-cream text-chocolate dark:text-slate-900 py-1 px-4 rounded-full">
             Software Engineer
           </p>
           <hr className="w-full text-gray-300 dark:text-gray-700" />
         </li>
-        <li className="flex justify-center items-center w-full relative my-4">
+        <li className="flex justify-center items-center w-full relative my-6">
           <p className="flex absolute bg-cream text-chocolate dark:text-slate-900 py-1 px-4 rounded-full">
             Web Developer
           </p>
@@ -50,38 +61,9 @@ const SidebarRight = (props) => {
         vickarungaru@gmail.com
       </a>
       <div className="grid grid-cols-4 gap-4 my-8">
-        <a
-          className="flex justify-center items-center text-chocolate dark:text-cream text-2xl hover:text-gray-600 active:text-gray-600 focus:text-gray-600  w-10 h-10 align rounded-full"
-          href="https://twitter.com/Karungaru_M"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i className="fab fa-twitter"></i>
-        </a>
-        <a
-          className="flex justify-center items-center text-chocolate dark:text-cream text-2xl hover:text-gray-600 active:text-gray-600 focus:text-gray-600  w-10 h-10 align rounded-full"
-          href="https://codepen.io/karungarum"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i className="fab fa-codepen"></i>
-        </a>
-        <a
-          className="flex justify-center items-center text-chocolate dark:text-cream text-2xl hover:text-gray-600 active:text-gray-600 focus:text-gray-600  w-10 h-10 align rounded-full"
-          href="https://www.linkedin.com/in/karungaru-mithamo-030646b1/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i className="fab fa-linkedin"></i>
-        </a>
-        <a
-          className="flex justify-center items-center text-chocolate dark:text-cream text-2xl hover:text-gray-600 active:text-gray-600 focus:text-gray-600- w-10 align rounded-full"
-          href="https://github.com/mithamovictor"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i className="fab fa-github"></i>
-        </a>
+        {socialIcons.map((icon, index) => (
+          <SocialIcons key={index} url={icon.url} iconClass={icon.iconClass} />
+        ))}
       </div>
     </div>
   );

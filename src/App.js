@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { ToastContainer } from "react-toastify";
 import Main from "./components/Main";
 import SidebarRight from "./components/SidebarRight";
 
@@ -28,6 +29,7 @@ const App = () => {
   // };
   return (
     <div className="flex flex-col md:flex-row w-full min-h-screen grow-1 mx-auto">
+      <ToastContainer />
       <SidebarRight logo={logo} />
       <Main />
     </div>

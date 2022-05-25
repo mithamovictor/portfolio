@@ -29,7 +29,7 @@ const PortfolioItem = (props) => {
         <h3 className="text-2xl text-chocolate dark:text-cream font-bold mb-4">
           {props.content.title}
         </h3>
-        <p className="text-sm text-chocolate dark:text-cream">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
           {props.content.description}
         </p>
         <p className="flex justify-center items-center text-center w-full mt-4 p-4">

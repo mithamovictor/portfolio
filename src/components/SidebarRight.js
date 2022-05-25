@@ -14,7 +14,7 @@ const SidebarRight = (props) => {
     { url: "https://github.com/mithamovictor", iconClass: "fab fa-github" },
   ];
   return (
-    <div className="flex flex-col justify-start lg:justify-center items-center bg-gray-100 dark:bg-slate-900 w-full lg:max-w-side-bar p-4">
+    <div className="flex flex-col justify-center items-center bg-gray-100 dark:bg-slate-900 w-full md:max-w-side-bar p-4">
       <div className="flex w-full justify-between items-center my-8">
         <Image
           className="logo"

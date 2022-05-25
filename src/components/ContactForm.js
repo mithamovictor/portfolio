@@ -125,7 +125,7 @@ export default class ContactForm extends Component {
         className="flex flex-col justify-center items-center w-full max-w-screen-sm mt-12"
       >
         <input
-          className="flex bg-transparent border border-b border-gray-300 text-sm md:text-base p-2 rounded-md w-full focus:outline-0 focus:ring-0 focus:border-chocolate dark:focus:border-cream text-chocolate dark:focus:text-cream"
+          className="flex bg-transparent border border-b border-gray-300 text-sm md:text-base p-2 rounded-md w-full focus:outline-0 focus:ring-0 focus:border-chocolate dark:focus:border-cream text-chocolate dark:text-cream"
           type="text"
           name="name"
           id="name"
@@ -140,7 +140,7 @@ export default class ContactForm extends Component {
           </span>
         )}
         <input
-          className="flex bg-transparent border border-b border-gray-300 text-sm md:text-base mt-8 p-2 rounded-md w-full focus:outline-0 focus:ring-0 focus:border-chocolate dark:focus:border-cream text-chocolate dark:focus:text-cream"
+          className="flex bg-transparent border border-b border-gray-300 text-sm md:text-base mt-8 p-2 rounded-md w-full focus:outline-0 focus:ring-0 focus:border-chocolate dark:focus:border-cream text-chocolate dark:text-cream"
           type="email"
           name="email"
           id="email"
@@ -155,7 +155,7 @@ export default class ContactForm extends Component {
           </span>
         )}
         <textarea
-          className="flex bg-transparent border border-b border-gray-300 text-sm md:text-base mt-8 p-2 rounded-md w-full focus:outline-0 focus:ring-0 focus:border-chocolate dark:focus:border-cream text-chocolate dark:focus:text-cream"
+          className="flex bg-transparent border border-b border-gray-300 text-sm md:text-base mt-8 p-2 rounded-md w-full focus:outline-0 focus:ring-0 focus:border-chocolate dark:focus:border-cream text-chocolate dark:text-cream"
           name="message"
           id="message"
           rows="8"

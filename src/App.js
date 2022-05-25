@@ -20,13 +20,6 @@ const App = () => {
     lazyLoading: true,
     alt: "Karungaru Mithamo",
   };
-  // const pic = {
-  //   url: "/img/vic.png",
-  //   width: "100%",
-  //   height: "auto",
-  //   lazyLoading: true,
-  //   alt: "Karungaru Mithamo",
-  // };
   return (
     <div className="flex flex-col md:flex-row w-full min-h-screen grow-1 mx-auto">
       <ToastContainer />

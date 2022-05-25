@@ -28,7 +28,7 @@ const About = () => {
       <div className="flex justify-center w-full">
         <Image
           className="flex max-w-sm z-10 p-6 pb-0 animate-pulse"
-          src="/img/vic_portfolio_2.png"
+          src="/img/vic.png"
           alt="Karungaru Mithamo"
           width="100%"
           height="auto"

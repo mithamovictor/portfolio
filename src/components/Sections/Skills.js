@@ -21,7 +21,7 @@ const Skills = () => {
   return (
     <section id="skillset" className="my-8">
       <SectionTitle title="Skills" />
-      <div className="flex justify-center items-center flex-wrap">
+      <div className="flex justify-center items-center flex-wrap pt-8">
         {icons.map((icon, index) => (
           <div
             key={index}

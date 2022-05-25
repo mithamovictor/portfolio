@@ -21,7 +21,8 @@ const About = () => {
           href="/resume/Resume.pdf"
           download={true}
         >
-          CV / Resume
+          My CV / Resume
+          <i className="ml-2 fa-solid fa-download"></i>
         </a>
       </div>
       <div className="flex justify-center w-full">

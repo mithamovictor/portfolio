@@ -41,6 +41,7 @@ const PortfolioItem = (props) => {
               href={props.content.url}
             >
               Visit Site
+              <i className="ml-2 fa-solid fa-up-right-from-square"></i>
             </a>
           )}
         </p>

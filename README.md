@@ -1,8 +1,8 @@
 # Portfolio website for Karungaru Mithamo
 
-This is a portfolio website for (Karungaru Mithamo)[https://mithamovictor.github.io].
+This is a portfolio website for [Karungaru Mithamo](https://mithamovictor.github.io).
 
-![Karungaru Mithamo][https://github.com/mithamovictor/mithamovictor.github.io/tree/master/public/img/vic.png]
+![Karungaru Mithamo](https://github.com/mithamovictor/portfolio_site/blob/master/public/img/vic.png)
 
 ## Setup
 

@@ -24,7 +24,7 @@ const SidebarRight = (props) => {
           height={height}
           loading={lazyLoading}
         />
-        <ToggleThemeButton />
+        <ToggleThemeButton hasDarkTheme={props.hasDarkTheme} />
       </div>
       <h1 className="text-lg font-bold text-center uppercase mt-4 mb-2 text-chocolate dark:text-cream w-full">
         <hr />

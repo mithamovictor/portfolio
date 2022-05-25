@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 
-const ToggleThemeButton = () => {
-  const [isDarkTheme, setIsDarkTheme] = useState("");
+const ToggleThemeButton = (props) => {
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const { hasDarkTheme } = props;
   const bodyClassList = document.querySelector("body").classList;
 
   useEffect(() => {
-    const theme = localStorage.getItem("kttheme");
-    if (theme && theme === "dark") setIsDarkTheme(true);
-    if ((theme && theme === "light") || !theme) setIsDarkTheme(false);
-  }, []);
+    setIsDarkTheme(hasDarkTheme);
+  }, [hasDarkTheme]);
 
   const toggleTheme = (e) => {
     e.preventDefault();
@@ -24,6 +23,8 @@ const ToggleThemeButton = () => {
       bodyClassList?.add("dark");
     }
   };
+
+  console.log(isDarkTheme);
   return (
     <button onClick={toggleTheme}>
       <i

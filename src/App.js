@@ -1,18 +1,31 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import Main from "./components/Main";
 import SidebarRight from "./components/SidebarRight";
 
 const App = () => {
+  const [hasDarkTheme, setHasDarkTheme] = useState(false);
   useEffect(() => {
     const theme = localStorage.getItem("kttheme");
     const body = document.querySelector("body");
-    if (!theme && body.classList.contains("dark"))
-      return body.classList.remove("dark");
-    if (theme && theme === "light" && body.classList.contains("dark"))
-      return body.classList.remove("dark");
-    return body.classList.add("dark");
+    const bodyHasDarkClass = body.classList.contains("dark");
+    // Check if theme is set on initial render
+    if (!bodyHasDarkClass && theme !== undefined) {
+      switch (theme) {
+        case "dark":
+          body.classList.add("dark");
+          return setHasDarkTheme(true);
+        case "light":
+          setHasDarkTheme(false);
+          return;
+        default:
+          return;
+      }
+    } else {
+      setHasDarkTheme(true);
+    }
   }, []);
+
   const logo = {
     url: "/img/logo.svg",
     width: "100%",
@@ -23,7 +36,7 @@ const App = () => {
   return (
     <div className="flex flex-col md:flex-row w-full min-h-screen grow-1 mx-auto">
       <ToastContainer />
-      <SidebarRight logo={logo} />
+      <SidebarRight logo={logo} hasDarkTheme={hasDarkTheme} />
       <Main />
     </div>
   );

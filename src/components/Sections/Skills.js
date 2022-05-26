@@ -6,7 +6,7 @@ const Skills = () => {
     { url: "react.png", alt: "React J S icon", title: "React" },
     { url: "angular.png", alt: "Angular J S icon", title: "Angular" },
     { url: "vue.png", alt: "Vue J S icon", title: "Vue" },
-    { url: "wordpress.png", alt: "Wordpress icon", title: "Wordpress" },
+    { url: "wordpress.png", alt: "Wordpress icon", title: "WordPress" },
     { url: "mysql.png", alt: "MySQL icon", title: "MySQL" },
     { url: "mongodb.png", alt: "MongoDB icon", title: "MongoDB" },
     { url: "tailwind.png", alt: "Tailwind CSS icon", title: "TailwindCSS" },
@@ -14,7 +14,7 @@ const Skills = () => {
     {
       url: "foundation.png",
       alt: "Zurb Foundation icon",
-      title: "Zurb Fondation",
+      title: "Zurb Foundation",
     },
     { url: "php.png", alt: "PHP icon", title: "PHP" },
     { url: "sass.png", alt: "SASS icon", title: "SASS/SCSS" },
@@ -42,7 +42,7 @@ const Skills = () => {
               />
             </div>
             <div className="flex w-32 text-center">
-              <p className="text-xs text-chocolate font-bold bg-cream px-4 rounded-full w-full mb-8">
+              <p className="text-xs text-chocolate italic bg-cream py-0.5 px-2 rounded-full w-full mb-8">
                 {icon.title}
               </p>
             </div>

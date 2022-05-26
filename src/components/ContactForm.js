@@ -7,7 +7,7 @@ export default class ContactForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true,
+      loading: false,
       name: "",
       nameErr: false,
       email: "",

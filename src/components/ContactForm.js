@@ -7,7 +7,7 @@ export default class ContactForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
+      loading: true,
       name: "",
       nameErr: false,
       email: "",
@@ -174,7 +174,14 @@ export default class ContactForm extends Component {
           className="flex justify-center items-center w-full max-w-xs text-center bg-cream text-chocolate p-2 mt-8 rounded-full shadow-lg text-sm md:text-base"
           onClick={this.handleSubmit}
         >
-          Submit
+          <i
+            className={
+              loading
+                ? "fa-solid fa-spinner animate-spin mr-2"
+                : "fa-solid fa-paper-plane mr-2"
+            }
+          ></i>
+          {loading ? "Sending..." : "Send"}
         </button>
       </form>
     );

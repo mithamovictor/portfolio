@@ -23,8 +23,6 @@ const ToggleThemeButton = (props) => {
       bodyClassList?.add("dark");
     }
   };
-
-  console.log(isDarkTheme);
   return (
     <button onClick={toggleTheme}>
       <i

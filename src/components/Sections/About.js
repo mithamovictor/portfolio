@@ -12,9 +12,9 @@ const About = () => {
         </p>
         <p className="text-center w-full text-gray-600 dark:text-gray-400 mb-4">
           I've been working with the web for 5 years, building responsive
-          websites and web apps. I love writing CSS, HTML and progressive
-          JavaScript, and enjoy working on performance, accessibility, modern
-          static site generation and stunning interfaces.
+          websites and web apps. I love writing CSS, HTML, and progressive
+          JavaScript. I enjoy working on performance, accessibility, modern
+          static site generation, and stunning interfaces.
         </p>
         <a
           className="flex justify-center items-center w-full text-center bg-cream text-chocolate text-sm md:text-base p-2 mt-8 rounded-full shadow-lg max-w-xs"

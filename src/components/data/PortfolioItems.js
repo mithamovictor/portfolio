@@ -188,6 +188,22 @@ const portfolioItems = [
     },
     imageFirst: false,
   },
+
+  {
+    image: {
+      src: "/img/sites/todo_list_react.png",
+      alt: "Todo List - React App",
+      width: "100%",
+      height: "auto",
+      lazyLoading: true,
+    },
+    content: {
+      title: "Todo List - React App",
+      description: "A todo list app developed with React with miltiple features and deployed on Vercel",
+      url: "//csb-swntkb.vercel.app",
+    },
+    imageFirst: true,
+  },
 ];
 
 module.exports = { portfolioItems };

@@ -26,17 +26,17 @@ const App = () => {
     }
   }, []);
 
-  const logo = {
-    url: "/img/logo.svg",
-    width: "100%",
-    height: "auto",
-    lazyLoading: true,
-    alt: "Karungaru Mithamo",
-  };
+  // const logo = {
+  //   url: "/img/logo.svg",
+  //   width: "100%",
+  //   height: "auto",
+  //   lazyLoading: true,
+  //   alt: "Karungaru Mithamo",
+  // };
   return (
     <div className="flex flex-col md:flex-row w-full min-h-screen grow-1 mx-auto">
       <ToastContainer />
-      <SidebarRight logo={logo} hasDarkTheme={hasDarkTheme} />
+      <SidebarRight hasDarkTheme={hasDarkTheme} />
       <Main />
     </div>
   );

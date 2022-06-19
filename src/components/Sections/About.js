@@ -1,4 +1,6 @@
 import Image from "../Image";
+import Vic from "../../assets/img/vic.png";
+import Resume from "../../assets/resume/Resume.pdf";
 
 const About = () => {
   return (
@@ -18,7 +20,7 @@ const About = () => {
         </p>
         <a
           className="flex justify-center items-center w-full text-center bg-cream text-chocolate text-sm md:text-base p-2 mt-8 rounded-full shadow-lg max-w-xs"
-          href="/resume/Resume.pdf"
+          href={Resume}
           download={true}
         >
           My CV / Resume
@@ -28,7 +30,7 @@ const About = () => {
       <div className="flex justify-center w-full">
         <Image
           className="flex max-w-sm z-10 p-6 pb-0 animate-pulse"
-          src="/img/vic.png"
+          src={Vic}
           alt="Karungaru Mithamo"
           width="100%"
           height="auto"

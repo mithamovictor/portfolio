@@ -1,9 +1,9 @@
 import Image from "./Image";
 import SocialIcons from "./SocialIcons";
 import ToggleThemeButton from "./ToggleThemeButton";
+import Logo from '../assets/img/logo.png';
 
 const SidebarRight = (props) => {
-  const { url, alt, width, height, lazyLoading } = props.logo;
   const socialIcons = [
     { url: "https://twitter.com/Karungaru_M", iconClass: "fab fa-twitter" },
     { url: "https://codepen.io/karungarum", iconClass: "fab fa-codepen" },
@@ -18,11 +18,11 @@ const SidebarRight = (props) => {
       <div className="flex w-full justify-between items-center my-8">
         <Image
           className="logo"
-          src={url}
-          alt={alt}
-          width={width}
-          height={height}
-          loading={lazyLoading}
+          src={Logo}
+          alt="logo"
+          width="100%"
+          height="auto"
+          loading="lazy"
         />
         <ToggleThemeButton hasDarkTheme={props.hasDarkTheme} />
       </div>

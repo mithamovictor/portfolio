@@ -3,6 +3,8 @@ import Vic from "../../assets/img/vic.png";
 import Resume from "../../assets/resume/Resume.pdf";
 
 const About = () => {
+  const year = new Date().getFullYear();
+
   return (
     <section
       id="about"
@@ -13,7 +15,7 @@ const About = () => {
           Hi there, I'm a Full Stack Engineer based in Nairobi, Kenya
         </p>
         <p className="text-center w-full text-gray-600 dark:text-gray-400 mb-4">
-          I've been working with the web for 5 years, building responsive
+          I've been working with the web for {year-2017} years, building responsive
           websites and web apps. I love writing CSS, HTML, and progressive
           JavaScript. I enjoy working on performance, accessibility, modern
           static site generation, and stunning interfaces.

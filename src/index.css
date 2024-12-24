@@ -33,3 +33,7 @@ button:focus,
 button:active {
   @apply bg-[var(--color-red-hover)] text-[var(--color-light-blue)];
 }
+
+.hearts {
+  @apply text-[var(--color-red)];
+}

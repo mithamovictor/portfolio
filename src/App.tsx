@@ -10,6 +10,8 @@ import DefaultLayout from "./layouts/default-layout.tsx";
 import PublicLayout from "./layouts/public-layout.tsx";
 import Homepage from "./pages/public-pages/homepage.tsx";
 import NotFound from "./pages/public-pages/not-found.tsx";
+import Contact from "./pages/public-pages/contact.tsx";
+import Blog from "./pages/public-pages/blog.tsx";
 
 function App() {
   const router = createBrowserRouter(
@@ -22,6 +24,8 @@ function App() {
         {/* Public Pages */}
         <Route element={<PublicLayout />}>
           <Route path={"/"} element={<Homepage />} />
+          <Route path={"/blog"} element={<Blog />} />
+          <Route path={"/contact"} element={<Contact />} />
         </Route>
         {/* Not Found page */}
         <Route path={"*"} element={<NotFound />} />

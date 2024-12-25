@@ -23,7 +23,7 @@ const Homepage = () => {
         <h1 className="font-normal text-2xl md:text-4xl leading-none mb-4 md:mb-8 animate__animated animate__fadeIn">
           Full Stack Developer
         </h1>
-        <p className="font-normal text-justify md:text-center hyphens-auto text-sm md:text-xl mb-8">
+        <p className="font-normal text-justify md:text-center hyphens-auto text-sm md:text-md mb-8">
           I have a passion for software development with {years} years of
           experience. I enjoy creating tools that make life easier for people
           using React, NestJs and Springboot. On the frontend, I specialize in
@@ -39,7 +39,7 @@ const Homepage = () => {
           scalable, and user-centric.
         </p>
         <button
-          className="px-7 py-3 md:px-9 md:py-4 font-medium md:font-semibold text-sm rounded-md transition ease-linear duration-500"
+          className="px-4 py-2 font-medium md:font-semibold text-sm rounded-md transition ease-linear duration-500 w-full md:w-40"
           onClick={redirectToContact}
         >
           Hire me

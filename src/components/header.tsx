@@ -27,9 +27,6 @@ const Header: React.FC<any> = () => {
           <Link to={"/blog"} className={"font-semibold"}>
             Blog
           </Link>
-          <Link to={"/projects"} className={"font-semibold"}>
-            Projects
-          </Link>
           <Link to={"/contact"} className={"font-semibold"}>
             Contact
           </Link>

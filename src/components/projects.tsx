@@ -26,8 +26,8 @@ const Projects: FC<ProjectListType> = ({ projectList }) => {
 
   return (
     <section className="py-10 md:py-16">
-      <div className="flex flex-col justify-between items-center max-w-screen-xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between gap-4 md:gap-8 mb-8">
+      <div className="flex flex-col justify-between items-center max-w-screen-xl mx-auto w-full">
+        <div className="flex flex-col md:flex-row justify-between gap-4 md:gap-8 mb-8 w-full">
           <div className="w-full md:w-1/3">
             <h1 className="font-medium text-center md:text-left text-3xl md:text-4xl mb-5">
               Portfolio
@@ -77,7 +77,7 @@ const Projects: FC<ProjectListType> = ({ projectList }) => {
           />
         </div>
         <button
-          className="px-7 py-3 md:px-9 md:py-4 font-medium md:font-semibold text-sm rounded-md transition ease-linear duration-500"
+          className="px-4 py-2 font-medium md:font-semibold text-sm rounded-md transition ease-linear duration-500 w-full md:w-40"
           onClick={redirectToPortfolio}
         >
           View More

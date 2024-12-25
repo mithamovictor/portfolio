@@ -10,7 +10,7 @@ const PublicLayout = () => {
       }
     >
       <Header />
-      <main className={"flex-1 w-full p-4"}>
+      <main className={"flex-1 w-full p-4 max-h-[80vh] overflow-y-scroll"}>
         <Outlet />
       </main>
       <Footer />

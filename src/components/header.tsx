@@ -24,8 +24,8 @@ const Header: React.FC<any> = () => {
         {/*  my CV*/}
         {/*</button>*/}
         <ul className={"flex flex-row gap-4 text-gray-500 text-lg "}>
-          <Link to={"/about"} className={"font-semibold"}>
-            About
+          <Link to={"/blog"} className={"font-semibold"}>
+            Blog
           </Link>
           <Link to={"/projects"} className={"font-semibold"}>
             Projects

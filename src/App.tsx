@@ -11,6 +11,7 @@ import Homepage from "./pages/public-pages/homepage.tsx";
 import NotFound from "./pages/public-pages/not-found.tsx";
 import Contact from "./pages/public-pages/contact.tsx";
 import Blog from "./pages/public-pages/blog.tsx";
+import favicon from "./assets/img/favicon.png";
 
 function App() {
   const router = createBrowserRouter(
@@ -37,7 +38,7 @@ function App() {
       <Helmet>
         <title>Victor Mithamo</title>
         {/* Add the icon to the head */}
-        {/*<link rel='icon' href={favicon} />*/}
+        <link rel="icon" href={favicon} />
       </Helmet>
       <RouterProvider router={router} />
     </>

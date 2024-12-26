@@ -12,7 +12,7 @@ const PublicLayout = () => {
       <Header />
       <main
         className={
-          "flex justify-between flex-grow w-full p-4 min-h-[79vh] overflow-y-scroll"
+          "flex flex-col justify-between flex-grow w-full p-4 min-h-[79vh] overflow-y-scroll"
         }
       >
         <Outlet />

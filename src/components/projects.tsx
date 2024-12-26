@@ -1,7 +1,6 @@
-import { FC, useRef, useState } from "react";
-import { Link, NavigateFunction, useNavigate } from "react-router-dom";
+import { FC, useState } from "react";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 import ProjectDetailsModal from "./project-details-modal";
-import { Button } from "flowbite-react";
 
 type ProjectListType = {
   projectList: Array<{

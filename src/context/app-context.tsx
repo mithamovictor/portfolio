@@ -1,11 +1,4 @@
-import {
-  Context,
-  createContext,
-  FC,
-  ReactNode,
-  useContext,
-  useState,
-} from "react";
+import { Context, createContext, FC, ReactNode, useContext } from "react";
 
 const AppContext: Context<any> = createContext({});
 

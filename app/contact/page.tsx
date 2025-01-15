@@ -30,7 +30,10 @@ const ContactFormSubmitButton: FC = () => {
 };
 
 const Contact: FC = () => {
-  const [state, contactFormAction] = useFormState<any, any>(processContactForm, { message: null });
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [state, contactFormAction] = useFormState<{ message: string }>(processContactForm, { message: null });
 
   return (
     <>

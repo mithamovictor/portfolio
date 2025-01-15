@@ -1,6 +1,6 @@
 'use server';
 
-import nodemailer, { SentMessageInfo } from 'nodemailer';
+import nodemailer, {SentMessageInfo} from 'nodemailer';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
@@ -11,7 +11,10 @@ type ContactDetailsType = {
   message: string;
 };
 
-export const processContactForm = async (prevState: any, formData: any) => {
+export const processContactForm = async (
+  prevState: never,
+  formData: { get: (key: string) => string }
+): Promise<{ message: string }> => {
   // Utility to validate input text
   const isInvalidText = (text: string): boolean => !text || text.trim() === '';
 
@@ -26,7 +29,10 @@ export const processContactForm = async (prevState: any, formData: any) => {
   // Validation for required fields and email format
   const { firstName, lastName, email, message } = contactDetails;
 
-  if ([firstName, lastName, email, message].some(isInvalidText) || !email.includes('@')) {
+  if (
+    [firstName, lastName, email, message].some(isInvalidText) ||
+    !email.includes('@')
+  ) {
     return { message: 'Invalid input' };
   }
 

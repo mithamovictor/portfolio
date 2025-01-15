@@ -3,7 +3,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import image from '@/app/images/vic.png';
 import Socials from '@/app/components/Socials';
-import PostItem from '@/app/components/PostItem';
 import PortfolioList from '@/app/components/PortfolioList';
 import PostsList from '@/app/components/PostsList';
 

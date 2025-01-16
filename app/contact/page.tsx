@@ -1,9 +1,9 @@
 'use client';
 
-import { FC } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { FC, useRef } from 'react';
+import { useFormStatus } from 'react-dom';
 import { FaPaperPlane, FaSpinner } from 'react-icons/fa';
-import { processContactForm } from '@/app/actions/ContactFormAction';
+import { submitContactForm } from '@/app/actions/ContactFormAction';
 
 const ContactFormSubmitButton: FC = () => {
   const { pending } = useFormStatus();
@@ -30,16 +30,17 @@ const ContactFormSubmitButton: FC = () => {
 };
 
 const Contact: FC = () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [state, contactFormAction] = useFormState<{ message: string }>(processContactForm, { message: null });
+  const ref = useRef<HTMLFormElement>(null);
 
   return (
     <>
       <h2 className={'uppercase text-lg underline mb-4 text-center'}>Contact</h2>
       <form
-        action={contactFormAction}
+        ref={ref}
+        action={async (formData: FormData) => {
+          await submitContactForm(formData);
+          ref.current?.reset();
+        }}
         id={'contact_form'}
         className={'grid grid-cols-1 md:grid-cols-2 gap-4 items-start justify-between'}
       >

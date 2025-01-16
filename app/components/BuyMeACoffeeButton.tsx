@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import Link from 'next/link';
-import Image from "next/image";
+import Image from 'next/image';
 
 const BuyMeACoffeeButton: FC = () => (
   <Link
@@ -10,9 +10,11 @@ const BuyMeACoffeeButton: FC = () => (
     href='https://www.buymeacoffee.com/vmithamo'
   >
     <Image
-      className='w-6 h-6 mr-2'
+      className='mr-2'
       src='https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg'
       alt='Buy me a coffee'
+      width={20}
+      height={20}
     />
     <span>Buy me a coffee</span>
   </Link>

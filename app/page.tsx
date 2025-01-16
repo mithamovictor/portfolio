@@ -31,10 +31,10 @@ export default function Home(): JSX.Element {
               >
                 Diamond Trust Bank
               </Link>{' '}
-              specializing in <span className={'italic'}>React (NextJS), NodeJS (NestJS) and SpringBoot</span>. I have
+              specializing in <span className={'italic'}>React (NextJS), NodeJS (NestJS) and SpringBoot</span>. I have{' '}
               {years} years working as a developer with {years - 3} years working in the financial industry. I have also
               gained skills in{' '}
-              <span className={'italic'}>
+              <span className={'font-semibold italic'}>
                 MySQL, Postgres, MongoDB, Redis, Kafka, RabbitMQ, Docker, Nginx, Kubernetes, Apache, RHEL, Ubuntu and
                 CI/CD.
               </span>

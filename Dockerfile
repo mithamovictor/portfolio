@@ -1,24 +1,26 @@
-FROM node:lts-alpine AS base
+# Step 1: Use an official Node.js image as a base
+FROM node:18-alpine AS base
 
-# Stage 1: Install dependencies
-FROM base AS deps
+# Step 2: Set the working directory
 WORKDIR /app
+
+# Step 3: Install pnpm
+RUN npm install -g pnpm
+
+# Step 4: Copy the package files to the container
 COPY package.json pnpm-lock.yaml ./
-RUN corepack enable pnpm && pnpm install --frozen-lockfile
 
-# Stage 2: Build the application
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Step 5: Install project dependencies using pnpm
+RUN pnpm install --frozen-lockfile
+
+# Step 6: Copy the rest of the application files
 COPY . .
-RUN corepack enable pnpm && pnpm run build
 
-# Stage 3: Production server
-FROM base AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# Step 7: Build the Next.js application for production
+RUN pnpm build
 
+# Step 8: Expose the port that Next.js will run on
 EXPOSE 3000
-CMD ["node", "server.js"]
+
+# Step 9: Run the application in production mode
+CMD ["pnpm", "start"]

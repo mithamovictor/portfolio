@@ -3,12 +3,12 @@
 import nodemailer, { SentMessageInfo } from 'nodemailer';
 import { revalidatePath } from 'next/cache';
 
-type FormDataDetails = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  message: string;
-};
+  type FormDataDetails = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    message: string;
+  };
 
 export const submitContactForm: (formData: FormData) => Promise<{ message: string }> = async (
   formData: FormData,

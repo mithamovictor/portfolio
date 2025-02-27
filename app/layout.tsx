@@ -17,10 +17,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={'flex flex-col justify-between w-full h-full min-h-screen bg-white items-center'}>
+      <body className={'flex flex-col justify-between w-full h-full min-h-screen items-center'}>
+      <div className={'flex flex-col justify-between items-center max-w-screen-xl p-4'}>
         <Header />
-        <main className={'flex flex-col flex-grow w-full max-w-screen-md p-4'}>{children}</main>
+        <main className={'flex flex-col flex-grow w-full my-4'}>{children}</main>
         <Footer />
+      </div>
       </body>
     </html>
   );

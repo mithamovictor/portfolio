@@ -6,7 +6,7 @@ import { FaGithub, FaGitlab } from 'react-icons/fa';
 const Socials: FC = () => (
   <>
     <Link
-      className={'text-2xl text-gray-400 hover:text-black active:text-black focus:text-black'}
+      className={'text-2xl'}
       href={'https://x.com/mithamo_vic'}
       target={'_blank'}
       rel={'noopener noreferrer'}
@@ -14,7 +14,7 @@ const Socials: FC = () => (
       <FaXTwitter />
     </Link>
     <Link
-      className={'text-2xl text-gray-400 hover:text-black active:text-black focus:text-black'}
+      className={'text-2xl'}
       href={'https://github.com/mithamovictor'}
       target={'_blank'}
       rel={'noopener noreferrer'}
@@ -22,7 +22,7 @@ const Socials: FC = () => (
       <FaGithub />
     </Link>
     <Link
-      className={'text-2xl text-gray-400 hover:text-orange-500 active:text-orange-500 focus:text-orange-500'}
+      className={'text-2xl'}
       href={'https://gitlab.com/victormithamo'}
       target={'_blank'}
       rel={'noopener noreferrer'}
@@ -30,7 +30,7 @@ const Socials: FC = () => (
       <FaGitlab />
     </Link>
     <Link
-      className={'text-2xl text-gray-400 hover:text-blue-600 active:text-blue-600 focus:text-blue-600'}
+      className={'text-2xl'}
       href={'https://www.linkedin.com/in/victor-mithamo-030646b1/'}
       target={'_blank'}
       rel={'noopener noreferrer'}

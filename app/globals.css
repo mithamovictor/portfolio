@@ -6,8 +6,12 @@
 @tailwind utilities;
 
 :root {
-    --animate-duration: 2000ms;
-    --animate-delay: 5s;
+  --animate-duration: 2000ms;
+  --animate-delay: 5s;
+  --primary-color: #500872;
+  --secondary-color: #fad645;
+  --golden-color: #b89401;
+  --white-color: #FFFFFF;
 }
 
 * {
@@ -21,4 +25,28 @@
 
 body {
     font-family: "Comic Neue", serif;
+    background-color: var(--primary-color);
+}
+
+h1, h2, h3, h4, h5, h6, a {
+  color: var(--secondary-color);
+}
+
+a:active, a:hover, a:focus {
+  color: var(--golden-color);
+}
+
+a.buy-me-a-coffee {
+  background-color: var(--white-color);
+  color: var(--primary-color);
+}
+
+a.buy-me-a-coffee:hover,
+a.buy-me-a-coffee:focus,
+a.buy-me-a-coffee:active {
+  background-color: #D3D3D3;
+}
+
+p {
+  color: var(--white-color);
 }

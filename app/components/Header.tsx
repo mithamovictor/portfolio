@@ -6,9 +6,9 @@ import Link from 'next/link';
 
 const Header: FC = () => {
   return (
-    <header className={'flex flex-col md:flex-row justify-between items-center w-full max-w-screen-md p-4 gap-6'}>
+    <header className={'flex flex-col md:flex-row justify-between items-center w-full my-4 gap-8'}>
       <Link href={'/'}>
-        <Image className={'w-52 h-auto'} src={logo} alt={'logo'} />
+        <Image className={'w-100 max-w-[100px] md:max-w-[150px] h-auto'} src={logo} alt={'logo'} />
       </Link>
       <Navigation />
     </header>

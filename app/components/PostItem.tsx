@@ -13,9 +13,9 @@ const PostItem: FC<PostItemProps> = ({ title, description, link }) => {
       <h3 className={'mt-4 text-lg'}>
         {title}
       </h3>
-      <p className={'text-sm'}>{description}</p>
+      <p>{description}</p>
       <Link
-        className={'mt-4 text-sm'}
+        className={'mt-4'}
         href={link}
       >
         Read more...

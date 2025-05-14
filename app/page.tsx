@@ -12,7 +12,7 @@ export default function Home(): JSX.Element {
       <div className='flex flex-col md:flex-row w-full justify-between gap-8'>
         <div className={'flex flex-col w-full items-start justify-between'}>
           <div className={'flex flex-col text-justify hyphens-auto gap-4 mb-4'}>
-            <p className='font-normal text-sm md:text-md'>
+            <p className='font-normal md:text-md'>
               Hello there, I am an experienced <span className={'font-semibold underline'}>Full Stack - Software Developer</span>{' '}
               specializing in <span className={'font-semibold italic'}>React (NextJS), NodeJS (NestJS) and SpringBoot</span>. I have{' '}
               {years} years working as a developer with {years - 3} years working in the financial industry. I have also

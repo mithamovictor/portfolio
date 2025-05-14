@@ -11,7 +11,7 @@ const ContactFormSubmitButton: FC = () => {
   return (
     <button
       className={
-        'flex flex-row items-center justify-center w-full md:w-40 text-center bg-[#a066cb] text-white hover:text-white active:text-white p-2 mt-8 rounded-md shadow-lg text-sm md:text-base'
+        'flex flex-row items-center justify-center w-full md:w-40 text-center bg-[#a066cb] text-white hover:text-white active:text-white p-2 mt-8 rounded-md shadow-lg md:text-base'
       }
       disabled={pending}
       type={'submit'}
@@ -47,7 +47,7 @@ const Contact: FC = () => {
       >
         <input
           className={
-            'border-0 border-b border-gray-300 text-sm p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1'
+            'border-0 border-b border-gray-300 p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1'
           }
           type={'text'}
           name={'firstName'}
@@ -57,7 +57,7 @@ const Contact: FC = () => {
         />
         <input
           className={
-            'border-0 border-b border-gray-300 text-sm p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1'
+            'border-0 border-b border-gray-300 p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1'
           }
           type={'text'}
           name={'lastName'}
@@ -67,7 +67,7 @@ const Contact: FC = () => {
         />
         <input
           className={
-            'border-0 border-b border-gray-300 text-sm p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1 md:col-span-2'
+            'border-0 border-b border-gray-300 p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1 md:col-span-2'
           }
           type={'email'}
           name={'email'}
@@ -77,7 +77,7 @@ const Contact: FC = () => {
         />
         <textarea
           className={
-            'border-0 border-b border-gray-300 text-sm p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1 md:col-span-2'
+            'border-0 border-b border-gray-300 p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1 md:col-span-2'
           }
           name={'message'}
           id={'message'}

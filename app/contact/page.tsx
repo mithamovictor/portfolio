@@ -11,7 +11,7 @@ const ContactFormSubmitButton: FC = () => {
   return (
     <button
       className={
-        'flex flex-row items-center justify-center w-full md:w-40 text-center text-white bg-black p-2 mt-8 rounded-md shadow-lg text-sm md:text-base'
+        'flex flex-row items-center justify-center w-full md:w-40 text-center bg-[#a066cb] text-white hover:text-white active:text-white p-2 mt-8 rounded-md shadow-lg text-sm md:text-base'
       }
       disabled={pending}
       type={'submit'}
@@ -34,7 +34,8 @@ const Contact: FC = () => {
 
   return (
     <>
-      <h2 className={'uppercase text-lg underline mb-4 text-center'}>Contact</h2>
+      <h2 className={'text-3xl text-center uppercase mb-4'}>Contact</h2>
+
       <form
         ref={ref}
         action={async (formData: FormData) => {

@@ -4,7 +4,7 @@ import PostsList from '@/app/components/PostsList';
 const Posts: FC = () => {
   return (
     <>
-      <h2 className={'uppercase text-lg underline mb-4 text-center'}>Posts</h2>
+      <h2 className={'text-3xl text-center uppercase mb-4'}>Posts</h2>
       <PostsList isHome={false} />
     </>
   );

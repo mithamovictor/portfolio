@@ -1,7 +1,5 @@
 import { JSX } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import image from '@/app/images/vic.png';
 import Socials from '@/app/components/Socials';
 import PortfolioList from '@/app/components/PortfolioList';
 import PostsList from '@/app/components/PostsList';
@@ -12,24 +10,11 @@ export default function Home(): JSX.Element {
   return (
     <>
       <div className='flex flex-col md:flex-row w-full justify-between gap-8'>
-        <div className='flex flex-col justify-center items-center md:items-start w-full md:max-w-[200px] animate__animated animate__bounceIn text-center'>
-          <Image className={'rounded-full w-48 h-auto'} src={image} alt='Image' />
-        </div>
         <div className={'flex flex-col w-full items-start justify-between'}>
           <div className={'flex flex-col text-justify hyphens-auto gap-4 mb-4'}>
-            <h1 className='font-bold text-center md:text-left text-xl uppercase mt-8 animate__animated animate__fadeIn'>Victor Mithamo</h1>
-            <h2 className='font-normal text-center md:text-left text-md leading-none animate__animated animate__fadeIn'>Full Stack Developer</h2>
             <p className='font-normal text-sm md:text-md'>
-              Hello there, I am an experienced <span className={'font-semibold italic underline'}>Full Stack - Software Developer</span>{' '}
-              at{' '}
-              <Link
-                href={'https://dtbk.dtbafrica.com/'}
-                target={'_blank'}
-                rel={'noopener noreferrer'}
-              >
-                Diamond Trust Bank
-              </Link>{' '}
-              specializing in <span className={'italic'}>React (NextJS), NodeJS (NestJS) and SpringBoot</span>. I have{' '}
+              Hello there, I am an experienced <span className={'font-semibold underline'}>Full Stack - Software Developer</span>{' '}
+              specializing in <span className={'font-semibold italic'}>React (NextJS), NodeJS (NestJS) and SpringBoot</span>. I have{' '}
               {years} years working as a developer with {years - 3} years working in the financial industry. I have also
               gained skills in{' '}
               <span className={'font-semibold italic'}>
@@ -43,27 +28,27 @@ export default function Home(): JSX.Element {
           </div>
           <Link
             href={'/contact'}
-            className='px-4 py-2 bg-black text-white text-center font-medium md:font-semibold text-sm rounded-md transition ease-linear duration-500 w-full md:w-40'
+            className='px-4 py-2 bg-[#a066cb] text-white hover:text-white active:text-white text-center font-medium md:font-semibold text-sm rounded-md transition ease-linear duration-500 w-full md:w-40'
           >
             Let&#39;s talk
           </Link>
         </div>
       </div>
       <div className={'flex flex-col my-8'}>
-        <h2 className={'text-2xl uppercase text-center font-bold underline mb-4'}>Portfolio</h2>
+        <h2 className={'text-3xl text-center uppercase mb-4'}>Portfolio</h2>
         <p className={'text-left md:text-center mb-4'}>Here are some of my past projects</p>
         <PortfolioList isHome={true} />
         <div className={'flex flex-col justify-center items-center mt-4'}>
-          <Link className={'w-full md:w-40 bg-black text-white text-center py-2 px-4 rounded-md'} href={'/portfolio'}>
+          <Link className={'w-full md:w-40 bg-[#a066cb] text-white hover:text-white active:text-white text-center py-2 px-4 rounded-md'} href={'/portfolio'}>
             View more
           </Link>
         </div>
       </div>
       <div className={'flex flex-col my-8'}>
-        <h2 className={'text-2xl uppercase text-center font-bold underline mb-4'}>Posts</h2>
+        <h2 className={'text-3xl text-center uppercase mb-4'}>Posts</h2>
         <PostsList isHome={true} />
         <div className={'flex flex-col justify-center items-center mt-4'}>
-          <Link className={'w-full md:w-40 bg-black text-white text-center py-2 px-4 rounded-md'} href={'/post'}>
+          <Link className={'w-full md:w-40 bg-[#a066cb] text-white hover:text-white active:text-white text-center py-2 px-4 rounded-md'} href={'/post'}>
             View more
           </Link>
         </div>

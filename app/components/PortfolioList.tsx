@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import PortfolioItem from '@/app/components/PortfolioItem';
-import placeholder from '@/app/images/vm_icon.png';
+import placeholder from '@/app/images/logo/vic_logo.svg';
 import stb from '@/app/images/sites/stb_games.png';
 import dgmc from '@/app/images/sites/dgmc.png';
 import spokenswahili from '@/app/images/sites/ss.png';

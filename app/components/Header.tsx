@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import Image from 'next/image';
-import logo from '@/app/images/vm_logo.png';
+import logo from '@/app/images/logo/vic_logo.svg';
 import Navigation from '@/app/components/Navigation';
 import Link from 'next/link';
 

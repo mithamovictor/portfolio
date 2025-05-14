@@ -1,5 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap");
-/*@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");*/
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,10 +8,11 @@
 :root {
   --animate-duration: 2000ms;
   --animate-delay: 5s;
-  --primary-color: #500872;
-  --secondary-color: #fad645;
-  --golden-color: #b89401;
-  --white-color: #FFFFFF;
+  --light-blue-color: #86c7ed;
+  --purple-color: #a066cb;
+  --blue-color: #1836b2;
+  --black-color: #0a0a0a;
+  --white-color: #fefefe;
 }
 
 * {
@@ -24,29 +25,26 @@
 }
 
 body {
-    font-family: "Comic Neue", serif;
-    background-color: var(--primary-color);
+    font-family: "Red Hat Display", sans-serif;
+    background-color: #f7f8fa;
+    font-size: 1rem;
 }
 
-h1, h2, h3, h4, h5, h6, a {
-  color: var(--secondary-color);
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Fira Sans", sans-serif;
+  color: var(--purple-color);
+}
+
+a {
+  color: var(--purple-color);
+  font-family: "Red Hat Display", sans-serif;
+  font-size: 1rem;
 }
 
 a:active, a:hover, a:focus {
-  color: var(--golden-color);
-}
-
-a.buy-me-a-coffee {
-  background-color: var(--white-color);
-  color: var(--primary-color);
-}
-
-a.buy-me-a-coffee:hover,
-a.buy-me-a-coffee:focus,
-a.buy-me-a-coffee:active {
-  background-color: #D3D3D3;
+  color: var(--purple-color);
 }
 
 p {
-  color: var(--white-color);
+  color: var(--black-color);
 }

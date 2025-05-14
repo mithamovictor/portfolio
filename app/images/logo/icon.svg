@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="740.45856"
+   zoomAndPan="magnify"
+   viewBox="0 0 555.34392 555.34395"
+   height="740.45862"
+   preserveAspectRatio="xMidYMid"
+   version="1.0"
+   id="svg49"
+   sodipodi:docname="vic_logo_5.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview49"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.472"
+     inkscape:cx="250"
+     inkscape:cy="250"
+     inkscape:window-width="1584"
+     inkscape:window-height="861"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg49" />
+  <defs
+     id="defs5">
+    <clipPath
+       id="056855b205">
+      <path
+         d="M 37.550781,187.00781 H 84.9375 v 40.63672 H 37.550781 Z m 0,0"
+         clip-rule="nonzero"
+         id="path1" />
+    </clipPath>
+    <clipPath
+       id="a172523e61">
+      <path
+         d="m 61,147.08594 h 70.88672 v 80.55859 H 61 Z m 0,0"
+         clip-rule="nonzero"
+         id="path2" />
+    </clipPath>
+    <clipPath
+       id="73481a1948">
+      <path
+         d="m 108.19531,147.08594 h 70.81641 v 80.55859 h -70.81641 z m 0,0"
+         clip-rule="nonzero"
+         id="path3" />
+    </clipPath>
+  </defs>
+  <g
+     id="g55"
+     transform="translate(-560.97241,-30.018587)">
+    <rect
+       style="fill:#ffffff;stroke-width:5.97774;stroke-linejoin:round"
+       id="rect54"
+       width="555.34393"
+       height="555.34393"
+       x="560.97241"
+       y="30.018589" />
+    <g
+       id="g54"
+       transform="matrix(2.9761507,0,0,2.9761507,-1337.1851,-441.52511)">
+      <g
+         clip-path="url(#056855b205)"
+         id="g51"
+         transform="translate(622.80721,64.374593)">
+        <path
+           fill="#86c7ed"
+           d="m 72.917969,187.05469 h -23.5625 L 37.550781,207.5 49.355469,227.90234 h 23.5625 L 84.71875,207.5 72.917969,187.05469"
+           fill-opacity="1"
+           fill-rule="nonzero"
+           id="path51" />
+      </g>
+      <g
+         clip-path="url(#a172523e61)"
+         id="g52"
+         transform="translate(622.80721,64.374593)">
+        <path
+           fill="#a066cb"
+           d="m 124.42578,194.60156 h 0.004 l -0.79688,-1.3789 -3.54687,-6.16797 h -0.0195 l -15.86719,-27.46875 -0.004,0.004 -7.718748,-13.34375 H 72.917969 L 61.113281,166.65234 69.054688,180.38281 88.5,214.0625 96.476562,227.90234 H 120.08594 L 131.84375,207.5 124.42578,194.60156"
+           fill-opacity="1"
+           fill-rule="nonzero"
+           id="path52" />
+      </g>
+      <g
+         clip-path="url(#73481a1948)"
+         id="g53"
+         transform="translate(622.80721,64.374593)">
+        <path
+           fill="#1836b2"
+           d="m 170.99219,193.60937 0.0352,-0.0195 -20.18359,-35.01172 -0.0469,0.0273 -7.14843,-12.35938 h -23.5625 l -11.80469,20.40625 11.80469,20.40235 h 0.008 l 11.78516,20.38672 -0.0352,0.0586 11.80469,20.40234 h 23.5625 L 179.01172,207.5 170.99219,193.60937"
+           fill-opacity="1"
+           fill-rule="nonzero"
+           id="path53" />
+      </g>
+    </g>
+  </g>
+</svg>

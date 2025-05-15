@@ -1,8 +1,14 @@
-import { FC } from 'react';
+'use client'
+
+import {FC, useEffect, useState} from 'react';
 import BuyMeACoffeeButton from '@/app/components/BuyMeACoffeeButton';
 
 const Footer: FC = () => {
-  const year = new Date().getFullYear();
+  const [year, setYear] = useState<number>(0);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
 
   return (
     <footer className='flex flex-col justify-center items-center my-4 w-full max-w-screen-md'>

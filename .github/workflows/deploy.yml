@@ -78,6 +78,6 @@ jobs:
 
                   echo '🏗 Building and starting app...'
                   pnpm build
-                  pm2 start \"pnpm start\" -- -p \"$FRONTEND_PORT\" --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\"
+                  pm2 start \"pnpm start -- -p \$FRONTEND_PORT\" --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\"
                   pm2 save
                 "

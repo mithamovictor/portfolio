@@ -62,21 +62,22 @@ jobs:
             # --- Stage: deploy ---
             - name: 🚀 Deploy with PM2
               run: |
-                  BRANCH=${{ github.ref_name }}
-                  FRONTEND_PORT=3002
+                BRANCH=${{ github.ref_name }}
+                FRONTEND_PORT=3002
 
-                  ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
-                    cd '$DEPLOY_PATH'
+                ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
+                  set -e
+                  cd '$DEPLOY_PATH'
 
-                    export CI_PROJECT_NAME='${{ github.event.repository.name }}'
-                    export CI_COMMIT_BRANCH='$BRANCH'
-                    export FRONTEND_PORT='$FRONTEND_PORT'
+                  export CI_PROJECT_NAME='${{ github.event.repository.name }}'
+                  export CI_COMMIT_BRANCH=${BRANCH}
+                  export FRONTEND_PORT=${FRONTEND_PORT}
 
-                    pm2 stop \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
-                    pm2 delete \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
+                  pm2 stop \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
+                  pm2 delete \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
 
-                    echo '🏗 Building and starting app...'
-                    pnpm build
-                    pm2 start \"pnpm start\" --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\"
-                    pm2 save
-                  "
+                  echo '🏗 Building and starting app...'
+                  pnpm build
+                  FRONTEND_PORT=\$FRONTEND_PORT pm2 start \"pnpm start\" --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\"
+                  pm2 save
+                "

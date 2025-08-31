@@ -3,7 +3,7 @@ name: Deploy portfolio website
 on:
     push:
         branches:
-            - master
+            - main
 
 env:
     DEPLOY_PATH: /home/vic/${{ github.event.repository.name }}

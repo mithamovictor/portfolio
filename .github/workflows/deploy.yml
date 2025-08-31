@@ -3,11 +3,10 @@ name: Deploy Mediloop frontend
 on:
     push:
         branches:
-            - main
-            - dev
+            - master
 
 env:
-    DEPLOY_PATH: /home/vic/mediloop/${{ github.ref_name }}/${{ github.event.repository.name }}
+    DEPLOY_PATH: /home/vic/${{ github.event.repository.name }}
 
 jobs:
     deploy:
@@ -64,12 +63,7 @@ jobs:
             - name: 🚀 Deploy with PM2
               run: |
                   BRANCH=${{ github.ref_name }}
-                  FRONTEND_PORT=0
-                  if [ "$BRANCH" = "dev" ]; then
-                    FRONTEND_PORT=3000
-                  elif [ "$BRANCH" = "main" ]; then
-                    FRONTEND_PORT=3001
-                  fi
+                  FRONTEND_PORT=3002
 
                   ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
                     cd '$DEPLOY_PATH'
@@ -81,14 +75,8 @@ jobs:
                     pm2 stop \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
                     pm2 delete \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
 
-                    if [ \"\$CI_COMMIT_BRANCH\" = \"dev\" ]; then
-                      echo '▶️ Running pnpm dev...'
-                      pm2 start \"pnpm dev -p \$FRONTEND_PORT\" --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\"
-                    elif [ \"\$CI_COMMIT_BRANCH\" = \"main\" ]; then
-                      echo '🏗 Building and starting app...'
-                      pnpm build
-                      pm2 start \"pnpm start\" --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\"
-                    fi
-
+                    echo '🏗 Building and starting app...'
+                    pnpm build
+                    pm2 start \"pnpm start\" --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\"
                     pm2 save
                   "

@@ -1,4 +1,4 @@
-name: Deploy Mediloop frontend
+name: Deploy portfolio website
 
 on:
     push:

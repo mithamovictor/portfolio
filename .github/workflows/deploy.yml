@@ -9,75 +9,111 @@ env:
     DEPLOY_PATH: /home/vic/${{ github.event.repository.name }}
 
 jobs:
-    deploy:
-        runs-on: ubuntu-latest
+  security-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-        steps:
-            # --- Setup SSH like GitLab's before_script ---
-            - name: 🚀 Checkout (for metadata)
-              uses: actions/checkout@v4
+      - name: ⚡ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-            - name: 🔑 Setup SSH agent
-              uses: webfactory/ssh-agent@v0.9.0
-              with:
-                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.1 # or whatever version you're using
 
-            - name: 📡 Add server to known_hosts
-              run: |
-                  mkdir -p ~/.ssh
-                  ssh-keyscan -H ${{ secrets.TARGET_SERVER_HOST }} >> ~/.ssh/known_hosts
+      - name: Install dependencies
+        run: pnpm install
 
-            # --- Stage: clone ---
-            - name: 🔄 Clone project on server
-              run: |
-                  ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
-                    if [ ! -d '$DEPLOY_PATH/.git' ]; then
-                      echo '📂 Project not found. Cloning...';
-                      mkdir -p '$DEPLOY_PATH';
-                      git clone --branch ${{ github.ref_name }} git@github.com:${{ github.repository }}.git '$DEPLOY_PATH';
-                    else
-                      echo '✅ Project already exists. Fetching latest...';
-                      cd '$DEPLOY_PATH';
-                      git fetch origin;
-                    fi
-                  "
+      - name: 🔒 Run pnpm audit
+        run: |
+          if [[ "${{ github.ref_name }}" == "dev" ]]; then
+             echo "Dev branch: auditing only, not failing on vulnerabilities"
+             pnpm audit --audit-level=high || true
+          else
+             echo "Prod/UAT branch: failing on high+ vulnerabilities"
+             pnpm audit --audit-level=high
+          fi
 
-            # --- Stage: setup ---
-            - name: 🛠 Setup project on server
-              run: |
-                  ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
-                    cd '$DEPLOY_PATH'
-                    git checkout -B ${{ github.ref_name }} origin/${{ github.ref_name }}
-                    git pull origin ${{ github.ref_name }}
-                  "
+      # - name: 🔒 Run pnpm audit
+      #   run: pnpm audit --audit-level=moderate
 
-            # --- Stage: build ---
-            - name: 🏗 Build project on server
-              run: |
-                  ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
-                    cd '$DEPLOY_PATH'
-                    pnpm install
-                  "
+      - name: 🔍 Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: "p/ci"
 
-            # --- Stage: deploy ---
-            - name: 🚀 Deploy with PM2
-              run: |
-                BRANCH=${{ github.ref_name }}
-                FRONTEND_PORT=3003
+  deploy:
+    needs: security-checks   # <--- This ensures deploy runs after security-checks
+    runs-on: ubuntu-latest
+    steps:
+      # --- Setup SSH like GitLab's before_script ---
+      - name: 🚀 Checkout (for metadata)
+        uses: actions/checkout@v4
 
-                ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
-                  set -e
-                  cd '$DEPLOY_PATH'
+      - name: 🔑 Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-                  export CI_PROJECT_NAME='${{ github.event.repository.name }}'
-                  export CI_COMMIT_BRANCH=${BRANCH}
-                  export FRONTEND_PORT=${FRONTEND_PORT}
+      - name: 📡 Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.TARGET_SERVER_HOST }} >> ~/.ssh/known_hosts
 
-                  pm2 stop \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
-                  pm2 delete \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
-
-                  echo '🏗 Building and starting app...'
-                  pnpm build
-                  pm2 start \"pnpm start -p \$FRONTEND_PORT\" --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\"
-                  pm2 save
+          # --- Stage: clone ---
+          - name: 🔄 Clone project on server
+            run: |
+              ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
+                if [ ! -d '$DEPLOY_PATH/.git' ]; then
+                  echo '📂 Project not found. Cloning...';
+                  mkdir -p '$DEPLOY_PATH';
+                  git clone --branch ${{ github.ref_name }} git@github.com:${{ github.repository }}.git '$DEPLOY_PATH';
+                else
+                  echo '✅ Project already exists. Fetching latest...';
+                  cd '$DEPLOY_PATH';
+                  git fetch origin;
+                fi
                 "
+
+          # --- Stage: setup ---
+          - name: 🛠 Setup project on server
+            run: |
+                ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
+                  cd '$DEPLOY_PATH'
+                  git checkout -B ${{ github.ref_name }} origin/${{ github.ref_name }}
+                  git pull origin ${{ github.ref_name }}
+                "
+
+          # --- Stage: build ---
+          - name: 🏗 Build project on server
+            run: |
+                ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
+                  cd '$DEPLOY_PATH'
+                  pnpm install
+                "
+
+          # --- Stage: deploy ---
+          - name: 🚀 Deploy with PM2
+            run: |
+              BRANCH=${{ github.ref_name }}
+              FRONTEND_PORT=3003
+
+              ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
+                set -e
+                cd '$DEPLOY_PATH'
+
+                export CI_PROJECT_NAME='${{ github.event.repository.name }}'
+                export CI_COMMIT_BRANCH=${BRANCH}
+                export FRONTEND_PORT=${FRONTEND_PORT}
+
+                pm2 stop \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
+                pm2 delete \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
+
+                echo '🏗 Building and starting app...'
+                pnpm build
+                pm2 start \"pnpm start -p \$FRONTEND_PORT\" --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\"
+                pm2 save
+              "

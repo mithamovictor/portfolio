@@ -63,7 +63,7 @@ jobs:
             - name: 🚀 Deploy with PM2
               run: |
                 BRANCH=${{ github.ref_name }}
-                FRONTEND_PORT=3002
+                FRONTEND_PORT=3003
 
                 ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
                   set -e

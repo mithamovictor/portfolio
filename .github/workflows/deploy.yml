@@ -1,12 +1,12 @@
 name: Deploy portfolio website
 
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches:
+      - main
 
 env:
-    DEPLOY_PATH: /home/vic/${{ github.event.repository.name }}
+  DEPLOY_PATH: /home/vic/${{ github.event.repository.name }}
 
 jobs:
   security-checks:
@@ -63,57 +63,57 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.TARGET_SERVER_HOST }} >> ~/.ssh/known_hosts
 
-          # --- Stage: clone ---
-          - name: 🔄 Clone project on server
-            run: |
-              ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
-                if [ ! -d '$DEPLOY_PATH/.git' ]; then
-                  echo '📂 Project not found. Cloning...';
-                  mkdir -p '$DEPLOY_PATH';
-                  git clone --branch ${{ github.ref_name }} git@github.com:${{ github.repository }}.git '$DEPLOY_PATH';
-                else
-                  echo '✅ Project already exists. Fetching latest...';
-                  cd '$DEPLOY_PATH';
-                  git fetch origin;
-                fi
-                "
+      # --- Stage: clone ---
+      - name: 🔄 Clone project on server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
+            if [ ! -d '$DEPLOY_PATH/.git' ]; then
+              echo '📂 Project not found. Cloning...';
+              mkdir -p '$DEPLOY_PATH';
+              git clone --branch ${{ github.ref_name }} git@github.com:${{ github.repository }}.git '$DEPLOY_PATH';
+            else
+              echo '✅ Project already exists. Fetching latest...';
+              cd '$DEPLOY_PATH';
+              git fetch origin;
+            fi
+          "
 
-          # --- Stage: setup ---
-          - name: 🛠 Setup project on server
-            run: |
-                ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
-                  cd '$DEPLOY_PATH'
-                  git checkout -B ${{ github.ref_name }} origin/${{ github.ref_name }}
-                  git pull origin ${{ github.ref_name }}
-                "
+      # --- Stage: setup ---
+      - name: 🛠 Setup project on server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
+            cd '$DEPLOY_PATH'
+            git checkout -B ${{ github.ref_name }} origin/${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
+          "
 
-          # --- Stage: build ---
-          - name: 🏗 Build project on server
-            run: |
-                ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
-                  cd '$DEPLOY_PATH'
-                  pnpm install
-                "
+      # --- Stage: build ---
+      - name: 🏗 Build project on server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
+            cd '$DEPLOY_PATH'
+            pnpm install
+          "
 
-          # --- Stage: deploy ---
-          - name: 🚀 Deploy with PM2
-            run: |
-              BRANCH=${{ github.ref_name }}
-              FRONTEND_PORT=3003
+      # --- Stage: deploy ---
+      - name: 🚀 Deploy with PM2
+        run: |
+          BRANCH=${{ github.ref_name }}
+          FRONTEND_PORT=3003
 
-              ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
-                set -e
-                cd '$DEPLOY_PATH'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
+            set -e
+            cd '$DEPLOY_PATH'
 
-                export CI_PROJECT_NAME='${{ github.event.repository.name }}'
-                export CI_COMMIT_BRANCH=${BRANCH}
-                export FRONTEND_PORT=${FRONTEND_PORT}
+            export CI_PROJECT_NAME='${{ github.event.repository.name }}'
+            export CI_COMMIT_BRANCH=${BRANCH}
+            export FRONTEND_PORT=${FRONTEND_PORT}
 
-                pm2 stop \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
-                pm2 delete \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
+            pm2 stop \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
+            pm2 delete \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
 
-                echo '🏗 Building and starting app...'
-                pnpm build
-                pm2 start \"pnpm start -p \$FRONTEND_PORT\" --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\"
-                pm2 save
-              "
+            echo '🏗 Building and starting app...'
+            pnpm build
+            pm2 start \"pnpm start -p \$FRONTEND_PORT\" --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\"
+            pm2 save
+          "

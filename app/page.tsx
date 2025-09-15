@@ -48,7 +48,7 @@ export default function Home(): JSX.Element {
         <h2 className={'text-3xl text-center uppercase mb-4'}>Posts</h2>
         <PostsList isHome={true} />
         <div className={'flex flex-col justify-center items-center mt-4'}>
-          <Link className={'w-full md:w-40 bg-[#a066cb] text-white hover:text-white active:text-white text-center py-2 px-4 rounded-md'} href={'/post'}>
+          <Link className={'w-full md:w-40 bg-[#a066cb] text-white hover:text-white active:text-white text-center py-2 px-4 rounded-md'} href={'/posts'}>
             View more
           </Link>
         </div>

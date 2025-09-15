@@ -2,13 +2,15 @@
 
 import nodemailer, { SentMessageInfo } from 'nodemailer';
 import { revalidatePath } from 'next/cache';
+import axios from 'axios';
+import { DevToArticle } from '@/app/components/PostsList';
 
-  type FormDataDetails = {
-    firstName: string;
-    lastName: string;
-    email: string;
-    message: string;
-  };
+type FormDataDetails = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  message: string;
+};
 
 export const submitContactForm: (formData: FormData) => Promise<{ message: string }> = async (
   formData: FormData,
@@ -125,5 +127,20 @@ const sendNotification: (formDataDetails: FormDataDetails) => Promise<void> = as
   } catch (error) {
     console.error('Error sending email:', error);
     throw new Error('Failed to send email.');
+  }
+};
+
+export const fetchPosts = async (): Promise<DevToArticle[]|undefined> => {
+  const { DEV_TO_API_KEY } = process.env;
+  try {
+    const url = 'https://dev.to/api/articles/me/all';
+
+    const response = await axios.get(url, {
+      headers: { 'api-key': DEV_TO_API_KEY },
+    });
+
+    return response.data;
+  } catch (e) {
+    console.error('Error fetching articles:', e);
   }
 };

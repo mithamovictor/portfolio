@@ -104,6 +104,7 @@ jobs:
             export CI_COMMIT_BRANCH=${BRANCH}
             export FRONTEND_PORT=${FRONTEND_PORT}
             export BREVO_API_KEY_PORTFOLIO='${{ secrets.BREVO_API_KEY_PORTFOLIO }}'
+            export DEV_TO_API_KEY_PORTFOLIO='${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}'
 
             # Replace env placeholders with real values
             envsubst < .env > .env.tmp && mv .env.tmp .env

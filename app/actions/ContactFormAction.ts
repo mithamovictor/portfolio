@@ -130,13 +130,13 @@ const sendNotification: (formDataDetails: FormDataDetails) => Promise<void> = as
   }
 };
 
-export const fetchPosts = async (): Promise<DevToArticle[]|undefined> => {
-  const { DEV_TO_API_KEY } = process.env;
+export const fetchPosts = async (): Promise<DevToArticle[] | undefined> => {
+  const { DEV_TO_API_KEY_PORTFOLIO } = process.env;
   try {
     const url = 'https://dev.to/api/articles/me/all';
 
     const response = await axios.get(url, {
-      headers: { 'api-key': DEV_TO_API_KEY },
+      headers: { 'api-key': DEV_TO_API_KEY_PORTFOLIO },
     });
 
     return response.data;

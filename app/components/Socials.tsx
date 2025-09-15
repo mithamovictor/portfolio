@@ -5,12 +5,7 @@ import { FaGithub, FaGitlab } from 'react-icons/fa';
 
 const Socials: FC = () => (
   <>
-    <Link
-      className={'text-2xl'}
-      href={'https://x.com/mithamo_vic'}
-      target={'_blank'}
-      rel={'noopener noreferrer'}
-    >
+    <Link className={'text-2xl'} href={'https://x.com/mithamo_vic'} target={'_blank'} rel={'noopener noreferrer'}>
       <FaXTwitter />
     </Link>
     <Link

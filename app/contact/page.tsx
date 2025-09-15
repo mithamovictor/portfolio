@@ -46,9 +46,7 @@ const Contact: FC = () => {
         className={'grid grid-cols-1 md:grid-cols-2 gap-4 items-start justify-between'}
       >
         <input
-          className={
-            'border-0 border-b border-gray-300 p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1'
-          }
+          className={'border-0 border-b border-gray-300 p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1'}
           type={'text'}
           name={'firstName'}
           id={'firstName'}
@@ -56,9 +54,7 @@ const Contact: FC = () => {
           required
         />
         <input
-          className={
-            'border-0 border-b border-gray-300 p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1'
-          }
+          className={'border-0 border-b border-gray-300 p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1'}
           type={'text'}
           name={'lastName'}
           id={'lastName'}

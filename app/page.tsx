@@ -13,8 +13,9 @@ export default function Home(): JSX.Element {
         <div className={'flex flex-col w-full items-start justify-between'}>
           <div className={'flex flex-col text-justify hyphens-auto gap-4 mb-4'}>
             <p className='font-normal md:text-md'>
-              Hello there, I am an experienced <span className={'font-semibold underline'}>Full Stack - Software Developer</span>{' '}
-              specializing in <span className={'font-semibold italic'}>React (NextJS), NodeJS (NestJS) and SpringBoot</span>. I have{' '}
+              Hello there, I am an experienced{' '}
+              <span className={'font-semibold underline'}>Full Stack - Software Developer</span> specializing in{' '}
+              <span className={'font-semibold italic'}>React (NextJS), NodeJS (NestJS) and SpringBoot</span>. I have{' '}
               {years} years working as a developer with {years - 3} years working in the financial industry. I have also
               gained skills in{' '}
               <span className={'font-semibold italic'}>
@@ -39,7 +40,12 @@ export default function Home(): JSX.Element {
         <p className={'text-left md:text-center mb-4'}>Here are some of my past projects</p>
         <PortfolioList isHome={true} />
         <div className={'flex flex-col justify-center items-center mt-4'}>
-          <Link className={'w-full md:w-40 bg-[#a066cb] text-white hover:text-white active:text-white text-center py-2 px-4 rounded-md'} href={'/portfolio'}>
+          <Link
+            className={
+              'w-full md:w-40 bg-[#a066cb] text-white hover:text-white active:text-white text-center py-2 px-4 rounded-md'
+            }
+            href={'/portfolio'}
+          >
             View more
           </Link>
         </div>
@@ -48,7 +54,12 @@ export default function Home(): JSX.Element {
         <h2 className={'text-3xl text-center uppercase mb-4'}>Posts</h2>
         <PostsList isHome={true} />
         <div className={'flex flex-col justify-center items-center mt-4'}>
-          <Link className={'w-full md:w-40 bg-[#a066cb] text-white hover:text-white active:text-white text-center py-2 px-4 rounded-md'} href={'/posts'}>
+          <Link
+            className={
+              'w-full md:w-40 bg-[#a066cb] text-white hover:text-white active:text-white text-center py-2 px-4 rounded-md'
+            }
+            href={'/posts'}
+          >
             View more
           </Link>
         </div>

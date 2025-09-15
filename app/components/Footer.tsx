@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import {FC, useEffect, useState} from 'react';
+import { FC, useEffect, useState } from 'react';
 import BuyMeACoffeeButton from '@/app/components/BuyMeACoffeeButton';
 
 const Footer: FC = () => {

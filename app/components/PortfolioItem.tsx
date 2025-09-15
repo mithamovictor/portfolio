@@ -19,19 +19,10 @@ const PortfolioItem: FC<PortfolioItemProps> = ({ link, title, description, year,
         <Image src={image} alt={`${title} image`} />
       </div>
       <div className={'flex flex-row justify-between items-center'}>
-        <Link
-          className={'uppercase'}
-          href={link}
-          target={'_blank'}
-          rel={'noopener noreferrer'}
-        >
+        <Link className={'uppercase'} href={link} target={'_blank'} rel={'noopener noreferrer'}>
           {title}
         </Link>
-        <Link
-          href={link}
-          target={'_blank'}
-          rel={'noopener noreferrer'}
-        >
+        <Link href={link} target={'_blank'} rel={'noopener noreferrer'}>
           <FaExternalLinkAlt />
         </Link>
       </div>

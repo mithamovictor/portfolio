@@ -108,12 +108,20 @@ jobs:
             export CI_PROJECT_NAME='${{ github.event.repository.name }}'
             export CI_COMMIT_BRANCH=${BRANCH}
             export FRONTEND_PORT=${FRONTEND_PORT}
+            export BREVO_API_KEY_PORTFOLIO=${BREVO_API_KEY_PORTFOLIO}
+            export BREVO_API_KEY_PORTFOLIO=${BREVO_API_KEY_PORTFOLIO}
 
             pm2 stop \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
             pm2 delete \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
 
             echo '🏗 Building and starting app...'
+            cp .env.example .env
+
+            # Fill .env from templates
+            envsubst < .env > .env.tmp && mv .env.tmp .env
+
             pnpm build
+
             pm2 start \"pnpm start -p \$FRONTEND_PORT\" --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\"
             pm2 save
           "

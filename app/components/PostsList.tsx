@@ -16,7 +16,7 @@ export interface DevToUser {
 }
 
 export interface DevToArticle {
-  type_of: "article";
+  type_of: 'article';
   id: number;
   title: string;
   description: string;
@@ -39,19 +39,22 @@ export interface DevToArticle {
 }
 
 const PostsList: FC<{ isHome: boolean }> = ({ isHome }) => {
-  const [postsList, setPostsList] = useState<Record<string, any>>([])
+  const [postsList, setPostsList] = useState<DevToArticle[]>([]);
 
   useEffect(() => {
     const loadPosts = async () => {
-      const posts: DevToArticle[]|undefined = await fetchPosts();
-      console.log("Fetched posts:", posts);
+      try {
+        const posts = await fetchPosts();
 
-      if (posts && isHome) {
-        setPostsList(posts.slice(0, 4));
-      } else if(posts && !isHome) {
-        setPostsList(posts);
-      } else {
-        setPostsList([])
+        if (!posts) {
+          setPostsList([]);
+          return;
+        }
+
+        setPostsList(isHome ? posts.slice(0, 4) : posts);
+      } catch (error) {
+        console.error('Error loading posts:', error);
+        setPostsList([]);
       }
     };
 
@@ -60,8 +63,8 @@ const PostsList: FC<{ isHome: boolean }> = ({ isHome }) => {
 
   return (
     <div className={'grid grid-cols-1 md:grid-cols-2 gap-4 items-start justify-between'}>
-      {postsList.map((post: any) => (
-        <PostItem post={post} />
+      {postsList.map((post: DevToArticle) => (
+        <PostItem key={post.id} post={post} />
       ))}
     </div>
   );

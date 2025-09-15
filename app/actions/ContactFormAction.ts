@@ -53,12 +53,7 @@ export const submitContactForm: (formData: FormData) => Promise<{ message: strin
 
   try {
     // Send notification
-    await sendNotification({
-      firstName,
-      lastName,
-      email,
-      message,
-    });
+    await sendNotification({ firstName, lastName, email, message });
 
     // Revalidate paths or trigger other side effects
     revalidatePath('/contact', 'layout'); // Adjust based on your revalidation method
@@ -158,22 +153,25 @@ const sendSmtpEmail: (to: string, subject: string, htmlContent: string) => Promi
   subject: string,
   htmlContent: string,
 ): Promise<void> => {
-  const emailAPI: TransactionalEmailsApi = new TransactionalEmailsApi();
+  const emailAPI = new TransactionalEmailsApi();
   emailAPI.setApiKey(0, BREVO_API_KEY_PORTFOLIO || '');
 
-  const sendSmtpEmail = new SendSmtpEmail();
-
-  sendSmtpEmail.subject = subject;
-  sendSmtpEmail.htmlContent = htmlContent;
-  sendSmtpEmail.sender = { name: "Mithamo's Portfolio", email: 'hello@mithamo.cc' }; // must be a verified sender
-  sendSmtpEmail.to = [{ email: to }];
-  sendSmtpEmail.replyTo = { email: 'hello@mithamo.cc', name: "Mithamo's Portfolio" };
+  const smtpEmail = new SendSmtpEmail();
+  smtpEmail.subject = subject;
+  smtpEmail.htmlContent = htmlContent;
+  smtpEmail.sender = { name: "Mithamo's Portfolio", email: 'hello@mithamo.cc' }; // must be verified
+  smtpEmail.to = [{ email: to }];
+  smtpEmail.replyTo = { email: 'hello@mithamo.cc', name: "Mithamo's Portfolio" };
 
   try {
-    const response = await emailAPI.sendTransacEmail(sendSmtpEmail);
+    const response = await emailAPI.sendTransacEmail(smtpEmail);
     console.log(`Email sent successfully: ${JSON.stringify(response.body)}`);
-  } catch (error: any) {
-    console.log(`Failed to send email: ${error.message}`, error.stack);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(`Failed to send email: ${error.message}`, error.stack);
+    } else {
+      console.error('Failed to send email: Unknown error', error);
+    }
     throw error;
   }
 };

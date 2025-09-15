@@ -22,7 +22,7 @@ jobs:
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.11.1 # or whatever version you're using
+          version: 10.11.1
 
       - name: Install dependencies
         run: pnpm install
@@ -30,15 +30,12 @@ jobs:
       - name: 🔒 Run pnpm audit
         run: |
           if [[ "${{ github.ref_name }}" == "main" ]]; then
-             echo "Dev branch: auditing only, not failing on vulnerabilities"
+             echo "Main branch: auditing only, not failing on vulnerabilities"
              pnpm audit --audit-level=high || true
           else
-             echo "Prod/UAT branch: failing on high+ vulnerabilities"
+             echo "Other branches: failing on high+ vulnerabilities"
              pnpm audit --audit-level=high
           fi
-
-      # - name: 🔒 Run pnpm audit
-      #   run: pnpm audit --audit-level=moderate
 
       - name: 🔍 Run Semgrep
         uses: returntocorp/semgrep-action@v1
@@ -46,10 +43,9 @@ jobs:
           config: "p/ci"
 
   deploy:
-    needs: security-checks   # <--- This ensures deploy runs after security-checks
+    needs: security-checks
     runs-on: ubuntu-latest
     steps:
-      # --- Setup SSH like GitLab's before_script ---
       - name: 🚀 Checkout (for metadata)
         uses: actions/checkout@v4
 
@@ -68,13 +64,13 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
             if [ ! -d '$DEPLOY_PATH/.git' ]; then
-              echo '📂 Project not found. Cloning...';
-              mkdir -p '$DEPLOY_PATH';
-              git clone --branch ${{ github.ref_name }} git@github.com:${{ github.repository }}.git '$DEPLOY_PATH';
+              echo '📂 Project not found. Cloning...'
+              mkdir -p '$DEPLOY_PATH'
+              git clone --branch ${{ github.ref_name }} git@github.com:${{ github.repository }}.git '$DEPLOY_PATH'
             else
-              echo '✅ Project already exists. Fetching latest...';
-              cd '$DEPLOY_PATH';
-              git fetch origin;
+              echo '✅ Project already exists. Fetching latest...'
+              cd '$DEPLOY_PATH'
+              git fetch origin
             fi
           "
 
@@ -87,41 +83,38 @@ jobs:
             git pull origin ${{ github.ref_name }}
           "
 
-      # --- Stage: build ---
-      - name: 🏗 Build project on server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
-            cd '$DEPLOY_PATH'
-            pnpm install
-          "
-
-      # --- Stage: deploy ---
-      - name: 🚀 Deploy with PM2
+      # --- Stage: build & deploy ---
+      - name: 🚀 Build and Deploy with PM2
         run: |
           BRANCH=${{ github.ref_name }}
           FRONTEND_PORT=3003
+          PROJECT_NAME=${{ github.event.repository.name }}
 
           ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
             set -e
             cd '$DEPLOY_PATH'
 
-            export CI_PROJECT_NAME='${{ github.event.repository.name }}'
+            echo '🛠 Installing dependencies...'
+            pnpm install
+
+            echo '🔧 Preparing environment...'
+            cp .env.example .env
+
+            export CI_PROJECT_NAME='${PROJECT_NAME}'
             export CI_COMMIT_BRANCH=${BRANCH}
             export FRONTEND_PORT=${FRONTEND_PORT}
-            export BREVO_API_KEY_PORTFOLIO=${BREVO_API_KEY_PORTFOLIO}
-            export BREVO_API_KEY_PORTFOLIO=${BREVO_API_KEY_PORTFOLIO}
+            export BREVO_API_KEY_PORTFOLIO='${{ secrets.BREVO_API_KEY_PORTFOLIO }}'
 
+            # Replace env placeholders with real values
+            envsubst < .env > .env.tmp && mv .env.tmp .env
+
+            echo '🏗 Building project...'
+            pnpm build
+
+            echo '🚀 Starting app with PM2...'
             pm2 stop \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
             pm2 delete \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
 
-            echo '🏗 Building and starting app...'
-            cp .env.example .env
-
-            # Fill .env from templates
-            envsubst < .env > .env.tmp && mv .env.tmp .env
-
-            pnpm build
-
-            pm2 start \"pnpm start -p \$FRONTEND_PORT\" --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\"
+            pm2 start pnpm --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" -- start -p \$FRONTEND_PORT
             pm2 save
           "

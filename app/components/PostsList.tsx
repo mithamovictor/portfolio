@@ -62,7 +62,7 @@ const PostsList: FC<{ isHome: boolean }> = ({ isHome }) => {
   }, [isHome]);
 
   return (
-    <div className={'grid grid-cols-1 md:grid-cols-2 gap-4 items-start justify-between'}>
+    <div className={'grid grid-cols-1 gap-4 items-start justify-between'}>
       {postsList.map((post: DevToArticle) => (
         <PostItem key={post.id} post={post} />
       ))}

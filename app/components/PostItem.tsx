@@ -12,32 +12,38 @@ const PostItem: FC<PostItemProps> = ({ post }) => {
   const hasCover = Boolean(post.cover_image);
 
   return (
-    <article className='flex flex-col p-4 rounded-2xl shadow hover:shadow-lg transition'>
-      {hasCover ? (
-        <Image
-          src={post.cover_image as string} // external URL
-          alt={post.title}
-          width={640}
-          height={360}
-          className='rounded-xl object-cover'
-        />
-      ) : (
-        <Image
-          src={logo} // local fallback
-          alt='Default cover'
-          width={640}
-          height={360}
-          className='rounded-xl object-cover'
-        />
-      )}
+    <article className="flex flex-col md:flex-row">
+  {hasCover ? (
+    <Image
+      src={post.cover_image as string} // external URL
+      alt={post.title}
+      width={640}
+      height={360}
+      className="w-full md:w-1/2 object-cover"
+    />
+  ) : (
+    <Image
+      src={logo} // local fallback
+      alt="Default cover"
+      width={640}
+      height={360}
+      className="w-full md:w-1/2 object-cover"
+    />
+  )}
 
-      <h3 className='mt-4 text-lg font-semibold'>{post.title}</h3>
-      <p className='text-gray-600'>{post.description}</p>
-
-      <Link className='mt-4 text-blue-600 hover:underline' href={post.url} target='_blank' rel='noopener noreferrer'>
-        Read more →
-      </Link>
-    </article>
+  <div className="p-4 flex flex-col justify-center md:w-1/2">
+    <h3 className="text-lg font-semibold">{post.title}</h3>
+    <p className="text-gray-600 mt-2">{post.description}</p>
+    <Link
+      className="mt-4 text-blue-600 hover:underline"
+      href={post.url}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Read more →
+    </Link>
+  </div>
+</article>
   );
 };
 

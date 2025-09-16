@@ -31,11 +31,14 @@ const PostItem: FC<PostItemProps> = ({ post }) => {
     />
   )}
 
-  <div className="p-4 flex flex-col justify-center md:w-1/2">
-    <h3 className="text-lg font-semibold">{post.title}</h3>
-    <p className="text-gray-600 mt-2">{post.description}</p>
+  <div className="p-4 flex flex-col justify-between md:w-1/2">
+    <div>
+      <h3 className="text-lg font-semibold">{post.title}</h3>
+      <p className="text-gray-600 mt-2">{post.description}</p>
+    </div>
+
     <Link
-      className="mt-4 text-blue-600 hover:underline"
+      className="mt-4 hover:text-red-600"
       href={post.url}
       target="_blank"
       rel="noopener noreferrer"

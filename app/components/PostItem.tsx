@@ -31,7 +31,7 @@ const PostItem: FC<PostItemProps> = ({ post }) => {
     />
   )}
 
-  <div className="p-4 flex flex-col justify-between md:w-1/2">
+  <div className="pl-0 pt-4 md:pt-0 md:pl-4 flex flex-col justify-between md:w-1/2">
     <div>
       <h3 className="text-lg font-semibold">{post.title}</h3>
       <p className="text-gray-600 mt-2">{post.description}</p>

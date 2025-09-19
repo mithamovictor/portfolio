@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  reactStrictMode: true,
   /* config options here */
   images: {
     remotePatterns: [
@@ -11,6 +12,10 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'dev.to',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dev-to-uploads.s3.amazonaws.com',
       },
     ],
   },

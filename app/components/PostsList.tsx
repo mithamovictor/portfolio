@@ -43,16 +43,16 @@ const PostsList: FC<{ isHome: boolean }> = ({ isHome }) => {
 
   useEffect(() => {
     const loadPosts = async () => {
-  try {
-    const allPosts = (await fetchPosts()) ?? [];
-    const publishedPosts = allPosts.filter((post) => post.published);
+      try {
+        const allPosts = (await fetchPosts()) ?? [];
+        const publishedPosts = allPosts.filter((post) => post.published);
 
-    setPostsList(isHome ? publishedPosts.slice(0, 4) : publishedPosts);
-  } catch (error) {
-    console.error("Error loading posts:", error);
-    setPostsList([]);
-  }
-};
+        setPostsList(isHome ? publishedPosts.slice(0, 4) : publishedPosts);
+      } catch (error) {
+        console.error('Error loading posts:', error);
+        setPostsList([]);
+      }
+    };
 
     loadPosts();
   }, [isHome]);

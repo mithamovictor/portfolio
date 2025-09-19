@@ -1,12 +1,11 @@
-name: Deploy portfolio website
+name: Deploy Mediloop frontend app
 
 on:
   push:
-    branches:
-      - main
+    branches: [ prod, uat, dev ]
 
 env:
-  DEPLOY_PATH: /home/vic/${{ github.event.repository.name }}
+  DEPLOY_PATH: /home/vic/mediloop/${{ github.ref_name }}/${{ github.event.repository.name }}
 
 jobs:
   security-checks:
@@ -22,19 +21,19 @@ jobs:
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.11.1
+          version: 10.16.0
 
       - name: Install dependencies
         run: pnpm install
 
       - name: 🔒 Run pnpm audit
         run: |
-          if [[ "${{ github.ref_name }}" == "main" ]]; then
-             echo "Main branch: auditing only, not failing on vulnerabilities"
-             pnpm audit --audit-level=high || true
+          if [[ "${{ github.ref_name }}" == "dev" ]]; then
+            echo "Dev branch: auditing only, not failing on vulnerabilities"
+            pnpm audit --audit-level=high || true
           else
-             echo "Other branches: failing on high+ vulnerabilities"
-             pnpm audit --audit-level=high
+            echo "Prod/UAT branch: failing on high+ vulnerabilities"
+            pnpm audit --audit-level=high
           fi
 
       - name: 🔍 Run Semgrep
@@ -45,46 +44,36 @@ jobs:
   deploy:
     needs: security-checks
     runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-${{ github.ref }}
+      cancel-in-progress: false
+
     steps:
-      - name: 🚀 Checkout (for metadata)
+      - name: 🚀 Checkout
         uses: actions/checkout@v4
 
-      - name: 🔑 Setup SSH agent
+      - name: 🔑 SSH agent (runner → server)
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: 📡 Add server to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.TARGET_SERVER_HOST }} >> ~/.ssh/known_hosts
-
-      # --- Stage: clone ---
-      - name: 🔄 Clone project on server
+      - name: 🔄 Clone or update project on server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
             if [ ! -d '$DEPLOY_PATH/.git' ]; then
-              echo '📂 Project not found. Cloning...'
-              mkdir -p '$DEPLOY_PATH'
-              git clone --branch ${{ github.ref_name }} git@github.com:${{ github.repository }}.git '$DEPLOY_PATH'
+              echo '📂 Project not found. Cloning...';
+              mkdir -p '$DEPLOY_PATH';
+              GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes' \
+              git clone --branch ${{ github.ref_name }} git@github.com:${{ github.repository }}.git '$DEPLOY_PATH';
             else
-              echo '✅ Project already exists. Fetching latest...'
-              cd '$DEPLOY_PATH'
-              git fetch origin
+              echo '✅ Project exists. Fetching latest...';
+              cd '$DEPLOY_PATH';
+              GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes' \
+              git fetch origin;
             fi
           "
 
-      # --- Stage: setup ---
-      - name: 🛠 Setup project on server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
-            cd '$DEPLOY_PATH'
-            git checkout -B ${{ github.ref_name }} origin/${{ github.ref_name }}
-            git pull origin ${{ github.ref_name }}
-          "
-
-      # --- Stage: build & deploy ---
-      - name: 🚀 Build and Deploy with PM2
+      - name: 🛠 Setup project (env)
         run: |
           BRANCH=${{ github.ref_name }}
           FRONTEND_PORT=3003
@@ -94,28 +83,37 @@ jobs:
             set -e
             cd '$DEPLOY_PATH'
 
-            echo '🛠 Installing dependencies...'
-            pnpm install
+            # Always reset to clean state before templating
+            git checkout -B ${{ github.ref_name }} origin/${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
 
-            echo '🔧 Preparing environment...'
             cp .env.example .env
 
-            export CI_PROJECT_NAME='${PROJECT_NAME}'
-            export CI_COMMIT_BRANCH=${BRANCH}
             export FRONTEND_PORT=${FRONTEND_PORT}
             export BREVO_API_KEY_PORTFOLIO='${{ secrets.BREVO_API_KEY_PORTFOLIO }}'
             export DEV_TO_API_KEY_PORTFOLIO='${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}'
+            export APP_NAME='${PROJECT_NAME}-${BRANCH}'
 
-            # Replace env placeholders with real values
+            # Replace env vars *after* repo is clean
             envsubst < .env > .env.tmp && mv .env.tmp .env
 
-            echo '🏗 Building project...'
+            pnpm install
             pnpm build
 
-            echo '🚀 Starting app with PM2...'
-            pm2 stop \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
-            pm2 delete \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" || true
+            echo '🛑 Stopping existing containers for $APP_NAME...'
+            docker stop \$APP_NAME || true
+            docker rm -f \$APP_NAME || true
+            docker system prune -f
 
-            pm2 start pnpm --name \"\$CI_PROJECT_NAME-\$CI_COMMIT_BRANCH\" -- start -p \$FRONTEND_PORT
-            pm2 save
+            echo '🏗️ Building fresh images...'
+            docker build -t \$APP_NAME .
+
+            echo '🚀 Starting stack...'
+            docker run -d --name \$APP_NAME --restart always \
+              -p \$FRONTEND_PORT:3000 \
+              -e NODE_ENV=\$NEXT_PUBLIC_NODE_ENV \
+              -e NEXT_PUBLIC_NODE_ENV=\$NEXT_PUBLIC_NODE_ENV \
+              -e NEXT_PUBLIC_API_BASE_URL=\$NEXT_PUBLIC_API_BASE_URL \
+              -e NEXT_PUBLIC_TOKEN_REFRESH_INTERVAL=\$NEXT_PUBLIC_TOKEN_REFRESH_INTERVAL \
+              \$APP_NAME
           "

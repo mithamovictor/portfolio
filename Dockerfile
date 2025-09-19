@@ -1,26 +1,19 @@
-# Step 1: Use an official Node.js image as a base
-FROM node:18-alpine AS base
+# Runtime only (no build inside Docker)
+FROM node:20-alpine
 
-# Step 2: Set the working directory
 WORKDIR /app
 
-# Step 3: Install pnpm
-RUN npm install -g pnpm
+RUN npm install -g pnpm@10.16.0
 
-# Step 4: Copy the package files to the container
-COPY package.json pnpm-lock.yaml ./
+# Copy only build artifacts from GitHub Actions
+COPY .env ./
+COPY .next ./.next
+COPY public ./public
+COPY node_modules ./node_modules
+COPY package.json ./package.json
 
-# Step 5: Install project dependencies using pnpm
-RUN pnpm install --frozen-lockfile
-
-# Step 6: Copy the rest of the application files
-COPY . .
-
-# Step 7: Build the Next.js application for production
-RUN pnpm build
-
-# Step 8: Expose the port that Next.js will run on
+# Default Next.js port
 EXPOSE 3000
 
-# Step 9: Run the application in production mode
+# Run Next.js in production
 CMD ["pnpm", "start"]

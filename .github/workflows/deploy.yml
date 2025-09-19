@@ -97,9 +97,6 @@ jobs:
             # Replace env vars *after* repo is clean
             envsubst < .env > .env.tmp && mv .env.tmp .env
 
-            pnpm install
-            pnpm build
-
             echo '🛑 Stopping existing containers for $APP_NAME...'
             docker stop \$APP_NAME || true
             docker rm -f \$APP_NAME || true

@@ -2,7 +2,7 @@ name: Deploy Mediloop frontend app
 
 on:
   push:
-    branches: [ prod, uat, dev ]
+    branches: [ main ]
 
 env:
   DEPLOY_PATH: /home/vic/mediloop/${{ github.ref_name }}/${{ github.event.repository.name }}

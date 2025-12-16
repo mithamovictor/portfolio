@@ -8,6 +8,8 @@ env:
   BASE_DEPLOY_PATH: /home/vic
   APP_NAME: portfolio
   FRONTEND_PORT: 3003
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   security-checks:
@@ -20,6 +22,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'pnpm'
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
@@ -27,7 +30,7 @@ jobs:
           version: 10.16.0
 
       - name: 📥 Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: 🔒 Run pnpm audit
         run: |
@@ -42,8 +45,34 @@ jobs:
         with:
           config: "p/ci"
 
-  deploy:
+  build:
     needs: security-checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🔐 Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏗️ Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+
+  deploy:
+    needs: build
     runs-on: [self-hosted, alma9]
 
     concurrency:
@@ -51,50 +80,61 @@ jobs:
       cancel-in-progress: false
 
     steps:
-      - name: 🚀 Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set environment variables
         run: |
           echo "DEPLOY_PATH=${BASE_DEPLOY_PATH}/${{ github.event.repository.name }}" >> $GITHUB_ENV
           echo "APP_NAME=${APP_NAME}-${{ github.ref_name }}" >> $GITHUB_ENV
-          echo "FRONTEND_PORT=${FRONTEND_PORT}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> $GITHUB_ENV
 
-      - name: 📂 Prepare deployment directory
-        run: |
-          mkdir -p "$DEPLOY_PATH"
-          rsync -a --delete ./ "$DEPLOY_PATH/"
+      - name: 🔐 Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🛠 Generate environment file
         run: |
-          cd "$DEPLOY_PATH"
-          cp .env.example .env
+          mkdir -p "$DEPLOY_PATH"
+          cp .env.example "$DEPLOY_PATH/.env"
           export BREVO_API_KEY_PORTFOLIO='${{ secrets.BREVO_API_KEY_PORTFOLIO }}'
           export DEV_TO_API_KEY_PORTFOLIO='${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}'
-          envsubst < .env > .env.tmp && mv .env.tmp .env
+          envsubst < "$DEPLOY_PATH/.env" > "$DEPLOY_PATH/.env.tmp" && mv "$DEPLOY_PATH/.env.tmp" "$DEPLOY_PATH/.env"
 
-      - name: 🛑 Stop existing container
+      - name: 🛑 Stop and remove old container
         run: |
           docker stop "$APP_NAME" || true
           docker rm -f "$APP_NAME" || true
 
-      - name: 🧹 Cleanup old images
-        run: docker system prune -f
+      - name: 🧹 Cleanup dangling images
+        run: docker image prune -f --filter "dangling=true"
 
-      - name: 🏗️ Build Docker image
+      - name: 📥 Pull and run container
         run: |
-          cd "$DEPLOY_PATH"
-          docker build -t "$APP_NAME" .
-
-      - name: 🚀 Run container
-        run: |
+          docker pull "$IMAGE_TAG"
           docker run -d \
             --name "$APP_NAME" \
             --restart unless-stopped \
             -p "$FRONTEND_PORT":3000 \
             --env-file "$DEPLOY_PATH/.env" \
-            "$APP_NAME"
+            "$IMAGE_TAG"
 
-      - name: 🗑️ Delete deployment directory
+      - name: ✅ Health check
+        run: |
+          for i in {1..30}; do
+            if curl -f http://localhost:$FRONTEND_PORT > /dev/null 2>&1; then
+              echo "Container is healthy"
+              exit 0
+            fi
+            echo "Attempt $i: Waiting for container..."
+            sleep 2
+          done
+          echo "Container failed to start"
+          exit 1
+
+      - name: 🗑️ Cleanup deployment directory
+        if: always()
         run: |
           rm -rf "$DEPLOY_PATH"

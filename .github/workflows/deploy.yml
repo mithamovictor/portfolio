@@ -1,4 +1,4 @@
-name: Deploy My portfolio
+name: Deploy My Portfolio
 
 on:
   push:
@@ -54,29 +54,29 @@ jobs:
       - name: 🚀 Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set environment variables
+        run: |
+          echo "DEPLOY_PATH=${BASE_DEPLOY_PATH}/${{ github.ref_name }}/${{ github.event.repository.name }}" >> $GITHUB_ENV
+          echo "APP_NAME=${APP_NAME}-${{ github.ref_name }}" >> $GITHUB_ENV
+          echo "FRONTEND_PORT=${FRONTEND_PORT}" >> $GITHUB_ENV
+
       - name: 📂 Prepare deployment directory
         run: |
-          export DEPLOY_PATH="${BASE_DEPLOY_PATH}/${{ github.event.repository.name }}"
           mkdir -p "$DEPLOY_PATH"
           rsync -a --delete ./ "$DEPLOY_PATH/"
-          echo "DEPLOY_PATH=$DEPLOY_PATH" >> $GITHUB_ENV
 
       - name: 🛠 Generate environment file
         run: |
           cd "$DEPLOY_PATH"
-
           cp .env.example .env
-
           export BREVO_API_KEY_PORTFOLIO='${{ secrets.BREVO_API_KEY_PORTFOLIO }}'
           export DEV_TO_API_KEY_PORTFOLIO='${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}'
-          export APP_NAME="${APP_NAME}-${{ github.ref_name }}"
-
           envsubst < .env > .env.tmp && mv .env.tmp .env
 
       - name: 🛑 Stop existing container
         run: |
-          docker stop "${APP_NAME}-${{ github.ref_name }}" || true
-          docker rm -f "${APP_NAME}-${{ github.ref_name }}" || true
+          docker stop "$APP_NAME" || true
+          docker rm -f "$APP_NAME" || true
 
       - name: 🧹 Cleanup old images
         run: docker system prune -f
@@ -84,17 +84,17 @@ jobs:
       - name: 🏗️ Build Docker image
         run: |
           cd "$DEPLOY_PATH"
-          docker build -t "${APP_NAME}:${{ github.ref_name }}" .
+          docker build -t "$APP_NAME" .
 
       - name: 🚀 Run container
         run: |
           docker run -d \
-            --name "${APP_NAME}-${{ github.ref_name }}" \
+            --name "$APP_NAME" \
             --restart unless-stopped \
-            -p ${FRONTEND_PORT}:3000 \
+            -p "$FRONTEND_PORT":3000 \
             --env-file "$DEPLOY_PATH/.env" \
-            "${APP_NAME}:${{ github.ref_name }}"
+            "$APP_NAME"
 
-      - name: Delete file after start
+      - name: 🗑️ Delete deployment directory
         run: |
           rm -rf "$DEPLOY_PATH"

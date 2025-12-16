@@ -1,15 +1,18 @@
-name: Deploy Mediloop frontend app
+name: Deploy My portfolio
 
 on:
   push:
     branches: [ main ]
 
 env:
-  DEPLOY_PATH: /home/vic/mediloop/${{ github.ref_name }}/${{ github.event.repository.name }}
+  BASE_DEPLOY_PATH: /home/vic
+  APP_NAME: portfolio
+  FRONTEND_PORT: 3003
 
 jobs:
   security-checks:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -23,16 +26,14 @@ jobs:
         with:
           version: 10.16.0
 
-      - name: Install dependencies
+      - name: 📥 Install dependencies
         run: pnpm install
 
       - name: 🔒 Run pnpm audit
         run: |
           if [[ "${{ github.ref_name }}" == "dev" ]]; then
-            echo "Dev branch: auditing only, not failing on vulnerabilities"
             pnpm audit --audit-level=high || true
           else
-            echo "Prod/UAT branch: failing on high+ vulnerabilities"
             pnpm audit --audit-level=high
           fi
 
@@ -43,74 +44,53 @@ jobs:
 
   deploy:
     needs: security-checks
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, alma9]
+
     concurrency:
-      group: deploy-${{ github.ref }}
+      group: deploy-${{ github.ref_name }}
       cancel-in-progress: false
 
     steps:
-      - name: 🚀 Checkout
+      - name: 🚀 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🔑 SSH agent (runner → server)
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: 🔄 Clone or update project on server
+      - name: 📂 Prepare deployment directory
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
-            if [ ! -d '$DEPLOY_PATH/.git' ]; then
-              echo '📂 Project not found. Cloning...';
-              mkdir -p '$DEPLOY_PATH';
-              GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes' \
-              git clone --branch ${{ github.ref_name }} git@github.com:${{ github.repository }}.git '$DEPLOY_PATH';
-            else
-              echo '✅ Project exists. Fetching latest...';
-              cd '$DEPLOY_PATH';
-              GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes' \
-              git fetch origin;
-            fi
-          "
+          export DEPLOY_PATH="${BASE_DEPLOY_PATH}/${{ github.ref_name }}/${{ github.event.repository.name }}"
+          mkdir -p "$DEPLOY_PATH"
+          rsync -a --delete ./ "$DEPLOY_PATH/"
+          echo "DEPLOY_PATH=$DEPLOY_PATH" >> $GITHUB_ENV
 
-      - name: 🛠 Setup project (env)
+      - name: 🛠 Generate environment file
         run: |
-          BRANCH=${{ github.ref_name }}
-          FRONTEND_PORT=3003
-          PROJECT_NAME=${{ github.event.repository.name }}
+          cd "$DEPLOY_PATH"
 
-          ssh -o StrictHostKeyChecking=no ${{ secrets.TARGET_SERVER_USER }}@${{ secrets.TARGET_SERVER_HOST }} "
-            set -e
-            cd '$DEPLOY_PATH'
+          cp .env.example .env
 
-            # Always reset to clean state before templating
-            git checkout -B ${{ github.ref_name }} origin/${{ github.ref_name }}
-            git pull origin ${{ github.ref_name }}
+          export BREVO_API_KEY_PORTFOLIO='${{ secrets.BREVO_API_KEY_PORTFOLIO }}'
+          export DEV_TO_API_KEY_PORTFOLIO='${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}'
+          export APP_NAME="${APP_NAME}-${{ github.ref_name }}"
 
-            cp .env.example .env
+          envsubst < .env > .env.tmp && mv .env.tmp .env
 
-            export FRONTEND_PORT=${FRONTEND_PORT}
-            export BREVO_API_KEY_PORTFOLIO='${{ secrets.BREVO_API_KEY_PORTFOLIO }}'
-            export DEV_TO_API_KEY_PORTFOLIO='${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}'
-            export APP_NAME='${PROJECT_NAME}-${BRANCH}'
+      - name: 🛑 Stop existing container
+        run: |
+          docker stop "${APP_NAME}-${{ github.ref_name }}" || true
+          docker rm -f "${APP_NAME}-${{ github.ref_name }}" || true
 
-            # Replace env vars *after* repo is clean
-            envsubst < .env > .env.tmp && mv .env.tmp .env
+      - name: 🧹 Cleanup old images
+        run: docker system prune -f
 
-            echo '🛑 Stopping existing containers for $APP_NAME...'
-            docker stop \$APP_NAME || true
-            docker rm -f \$APP_NAME || true
-            docker system prune -f
+      - name: 🏗️ Build Docker image
+        run: |
+          cd "$DEPLOY_PATH"
+          docker build -t "${APP_NAME}:${{ github.ref_name }}" .
 
-            echo '🏗️ Building fresh images...'
-            docker build -t \$APP_NAME .
-
-            echo '🚀 Starting stack...'
-            docker run -d --name \$APP_NAME --restart always \
-              -p \$FRONTEND_PORT:3000 \
-              -e NODE_ENV=\$NEXT_PUBLIC_NODE_ENV \
-              -e NEXT_PUBLIC_NODE_ENV=\$NEXT_PUBLIC_NODE_ENV \
-              -e NEXT_PUBLIC_API_BASE_URL=\$NEXT_PUBLIC_API_BASE_URL \
-              -e NEXT_PUBLIC_TOKEN_REFRESH_INTERVAL=\$NEXT_PUBLIC_TOKEN_REFRESH_INTERVAL \
-              \$APP_NAME
-          "
+      - name: 🚀 Run container
+        run: |
+          docker run -d \
+            --name "${APP_NAME}-${{ github.ref_name }}" \
+            --restart unless-stopped \
+            -p ${FRONTEND_PORT}:3000 \
+            --env-file "$DEPLOY_PATH/.env" \
+            "${APP_NAME}:${{ github.ref_name }}"

@@ -1,7 +1,5 @@
 import React from 'react';
 import './globals.css';
-import 'animate.css';
-import 'react-toastify/dist/ReactToastify.css';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 

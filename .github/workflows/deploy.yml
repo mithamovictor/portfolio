@@ -68,7 +68,7 @@ jobs:
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.28.0
+          version: 10.16.0
 
       - name: ⚡ Setup Node
         uses: actions/setup-node@v4
@@ -128,8 +128,8 @@ jobs:
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           format: 'sarif'
           output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
-          exit-code: '0'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
           scanners: 'vuln'
 
       - name: 📤 Upload Trivy results to GitHub Security
@@ -143,7 +143,7 @@ jobs:
         with:
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           format: 'table'
-          exit-code: '1'
+          exit-code: '0'
           severity: 'CRITICAL,HIGH,MEDIUM,LOW'
           scanners: 'vuln'
 

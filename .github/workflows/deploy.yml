@@ -45,11 +45,11 @@ jobs:
           config: "p/ci"
 
   build:
-    needs: code-security
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+      security-events: write
 
     steps:
       - uses: actions/checkout@v4
@@ -73,14 +73,6 @@ jobs:
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
 
-  container-security:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-
-    steps:
       - name: 🔐 Trivy image scan
         uses: aquasecurity/trivy-action@master
         with:
@@ -103,7 +95,7 @@ jobs:
           exit-code: '0'
 
   deploy:
-    needs: [build, container-security]
+    needs: [build, code-security]
     runs-on: [self-hosted, alma9]
 
     concurrency:

@@ -231,18 +231,46 @@ jobs:
 
       - name: ✅ Health check
         run: |
-          SERVICE_IP=$(kubectl get service ${{ env.APP_NAME }}-${{ github.ref_name }} -n ${{ env.NAMESPACE }} -o jsonpath='{.spec.clusterIP}')
+          # Try to get Service IP, but also check if Service exists
+          SERVICE_NAME="${{ env.APP_NAME }}-${{ github.ref_name }}"
+          SERVICE_IP=$(kubectl get service $SERVICE_NAME -n ${{ env.NAMESPACE }} -o jsonpath='{.spec.clusterIP}' || echo "")
 
-          for i in {1..30}; do
-            if kubectl run -n ${{ env.NAMESPACE }} --rm -i --restart=Never curl-check -- curl -f "http://$SERVICE_IP:3000" > /dev/null 2>&1; then
+          if [ -z "$SERVICE_IP" ]; then
+            echo "❌ Could not find Service IP for $SERVICE_NAME"
+            kubectl get svc -n ${{ env.NAMESPACE }}
+            exit 1
+          fi
+
+          echo "Checking health at http://$SERVICE_IP:3000"
+
+          # Increase total wait time and add more diagnostics
+          for i in {1..20}; do
+            echo "Attempt $i: Waiting for application..."
+            # Use a temporary pod to curl the service IP
+            # We use --quiet to avoid extra kubectl noise, but keep curl verbose on failure
+            if kubectl run -n ${{ env.NAMESPACE }} --rm -i --restart=Never curl-check -- curl -v -f "http://$SERVICE_IP:3000" --connect-timeout 5; then
               echo "✅ Application is healthy"
               exit 0
             fi
-            echo "Attempt $i: Waiting for application..."
-            sleep 2
+            echo "Retrying in 10 seconds..."
+            sleep 10
           done
 
-          echo "❌ Application failed to start"
+          echo "❌ Application failed to start or is unreachable after 200 seconds"
+          echo "--- POD STATUS ---"
+          kubectl get pods -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }},branch=${{ github.ref_name }}
+
+          echo "--- SERVICE DETAILS ---"
+          kubectl describe service $SERVICE_NAME -n ${{ env.NAMESPACE }}
+
+          echo "--- ENDPOINTS ---"
+          kubectl get endpoints $SERVICE_NAME -n ${{ env.NAMESPACE }}
+
+          echo "--- RECENT POD LOGS ---"
+          POD_NAME=$(kubectl get pods -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }},branch=${{ github.ref_name }} -o jsonpath='{.items[0].metadata.name}' || echo "")
+          if [ -n "$POD_NAME" ]; then
+            kubectl logs $POD_NAME -n ${{ env.NAMESPACE }} --tail=100
+          fi
           exit 1
 
       - name: 🔍 Deployment status

@@ -8,7 +8,9 @@ RUN apk add --no-cache libc6-compat
 RUN npm install -g pnpm@10.28.0
 
 COPY package.json pnpm-lock.yaml* ./
-RUN pnpm install --frozen-lockfile
+
+# Install with shamefully-hoist to ensure overrides are applied
+RUN pnpm install --frozen-lockfile --shamefully-hoist
 
 COPY . .
 
@@ -23,10 +25,12 @@ RUN npm install -g pnpm@10.28.0
 
 ENV NODE_ENV=production
 
+# Install only production dependencies with overrides applied
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --prod --frozen-lockfile --shamefully-hoist
+
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/node_modules ./node_modules
 
 EXPOSE 3000
 CMD ["pnpm", "start"]

@@ -78,7 +78,7 @@ jobs:
     runs-on: [self-hosted, alma9]
 
     concurrency:
-      group: deploy-${{ env.APP_NAME }}-${{ github.ref_name }}
+      group: deploy-portfolio-${{ github.ref_name }}
       cancel-in-progress: false
 
     steps:

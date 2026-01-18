@@ -29,7 +29,7 @@ export default function Home(): JSX.Element {
           </div>
           <Link
             href={'/contact'}
-            className='px-4 py-2 bg-[#a066cb] text-white hover:text-white active:text-white text-center font-medium md:font-semibold text-sm rounded-md transition ease-linear duration-500 w-full md:w-40'
+            className='px-4 py-2 bg-[#a066cb] text-white! hover:text-white! active:text-white! text-center font-medium md:font-semibold text-sm rounded-md transition ease-linear duration-500 w-full md:w-40'
           >
             Let&#39;s talk
           </Link>
@@ -42,7 +42,7 @@ export default function Home(): JSX.Element {
         <div className={'flex flex-col justify-center items-center mt-4'}>
           <Link
             className={
-              'w-full md:w-40 bg-[#a066cb] text-white hover:text-white active:text-white text-center py-2 px-4 rounded-md'
+              'w-full md:w-40 bg-[#a066cb] text-white! hover:text-white! active:text-white! text-center py-2 px-4 rounded-md'
             }
             href={'/portfolio'}
           >
@@ -56,7 +56,7 @@ export default function Home(): JSX.Element {
         <div className={'flex flex-col justify-center items-center mt-4'}>
           <Link
             className={
-              'w-full md:w-40 bg-[#a066cb] text-white hover:text-white active:text-white text-center py-2 px-4 rounded-md'
+              'w-full md:w-40 bg-[#a066cb] text-white! hover:text-white! active:text-white! text-center py-2 px-4 rounded-md'
             }
             href={'/posts'}
           >

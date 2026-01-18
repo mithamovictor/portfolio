@@ -1,15 +1,14 @@
-name: Deploy My Portfolio
+name: Deploy Portfolio to Kubernetes
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
 
 env:
-  BASE_DEPLOY_PATH: /home/vic
-  APP_NAME: portfolio
-  FRONTEND_PORT: 3003
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  NAMESPACE: portfolio
+  APP_NAME: portfolio
 
 jobs:
   security-checks:
@@ -79,65 +78,210 @@ jobs:
     runs-on: [self-hosted, alma9]
 
     concurrency:
-      group: deploy-${{ github.ref_name }}
+      group: deploy-portfolio-${{ github.ref_name }}
       cancel-in-progress: false
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set environment variables
-        run: |
-          echo "DEPLOY_PATH=${BASE_DEPLOY_PATH}/${{ github.event.repository.name }}" >> $GITHUB_ENV
-          echo "APP_NAME=${APP_NAME}-${{ github.ref_name }}" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> $GITHUB_ENV
-
-      - name: 🔐 Login to GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: 🔧 Set up kubectl
+        uses: azure/setup-kubectl@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          version: 'v1.28.0'
 
-      - name: 🛠 Generate environment file
+      - name: 🏗️ Configure kubectl context
         run: |
-          mkdir -p "$DEPLOY_PATH"
-          cp .env.example "$DEPLOY_PATH/.env"
-          export BREVO_API_KEY_PORTFOLIO='${{ secrets.BREVO_API_KEY_PORTFOLIO }}'
-          export DEV_TO_API_KEY_PORTFOLIO='${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}'
-          envsubst < "$DEPLOY_PATH/.env" > "$DEPLOY_PATH/.env.tmp" && mv "$DEPLOY_PATH/.env.tmp" "$DEPLOY_PATH/.env"
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+          kubectl cluster-info
 
-      - name: 🛑 Stop and remove old container
+      - name: 📝 Create namespace
         run: |
-          docker stop "$APP_NAME" || true
-          docker rm -f "$APP_NAME" || true
+          kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: 🧹 Cleanup dangling images
-        run: docker image prune -f --filter "dangling=true"
-
-      - name: 📥 Pull and run container
+      - name: 🔐 Create environment secret
         run: |
-          docker pull "$IMAGE_TAG"
-          docker run -d \
-            --name "$APP_NAME" \
-            --restart unless-stopped \
-            -p "$FRONTEND_PORT":3000 \
-            --env-file "$DEPLOY_PATH/.env" \
-            "$IMAGE_TAG"
+          kubectl create secret generic ${{ env.APP_NAME }}-env \
+            --from-literal=BREVO_API_KEY="${{ secrets.BREVO_API_KEY_PORTFOLIO }}" \
+            --from-literal=DEV_TO_API_KEY="${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}" \
+            -n ${{ env.NAMESPACE }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: 📦 Deploy to Kubernetes
+        run: |
+          kubectl apply -f - <<EOF
+          ---
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: ${{ env.APP_NAME }}-${{ github.ref_name }}
+            namespace: ${{ env.NAMESPACE }}
+            labels:
+              app: ${{ env.APP_NAME }}
+              branch: ${{ github.ref_name }}
+          spec:
+            replicas: 2
+            strategy:
+              type: RollingUpdate
+              rollingUpdate:
+                maxSurge: 1
+                maxUnavailable: 0
+            selector:
+              matchLabels:
+                app: ${{ env.APP_NAME }}
+                branch: ${{ github.ref_name }}
+            template:
+              metadata:
+                labels:
+                  app: ${{ env.APP_NAME }}
+                  branch: ${{ github.ref_name }}
+              spec:
+                containers:
+                  - name: ${{ env.APP_NAME }}
+                    image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+                    imagePullPolicy: Always
+                    ports:
+                      - name: http
+                        containerPort: 3000
+                    env:
+                      - name: BREVO_API_KEY
+                        valueFrom:
+                          secretKeyRef:
+                            name: ${{ env.APP_NAME }}-env
+                            key: BREVO_API_KEY
+                      - name: DEV_TO_API_KEY
+                        valueFrom:
+                          secretKeyRef:
+                            name: ${{ env.APP_NAME }}-env
+                            key: DEV_TO_API_KEY
+                      - name: NODE_ENV
+                        value: "production"
+                    resources:
+                      requests:
+                        cpu: 100m
+                        memory: 256Mi
+                      limits:
+                        cpu: 500m
+                        memory: 512Mi
+                    livenessProbe:
+                      httpGet:
+                        path: /
+                        port: http
+                      initialDelaySeconds: 30
+                      periodSeconds: 10
+                      timeoutSeconds: 5
+                      failureThreshold: 3
+                    readinessProbe:
+                      httpGet:
+                        path: /
+                        port: http
+                      initialDelaySeconds: 10
+                      periodSeconds: 5
+                      timeoutSeconds: 3
+                      failureThreshold: 2
+          ---
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: ${{ env.APP_NAME }}-${{ github.ref_name }}
+            namespace: ${{ env.NAMESPACE }}
+            labels:
+              app: ${{ env.APP_NAME }}
+              branch: ${{ github.ref_name }}
+          spec:
+            type: ClusterIP
+            selector:
+              app: ${{ env.APP_NAME }}
+              branch: ${{ github.ref_name }}
+            ports:
+              - name: http
+                port: 3000
+                targetPort: http
+          ---
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: ${{ env.APP_NAME }}-${{ github.ref_name }}
+            namespace: ${{ env.NAMESPACE }}
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              kubernetes.io/ingress.class: nginx
+          spec:
+            tls:
+              - hosts:
+                  - ${{ github.ref_name == 'main' && 'portfolio.mithamo.cc' || 'dev-portfolio.mithamo.cc' }}
+                secretName: ${{ env.APP_NAME }}-${{ github.ref_name }}-tls
+            rules:
+              - host: ${{ github.ref_name == 'main' && 'portfolio.mithamo.cc' || 'dev-portfolio.mithamo.cc' }}
+                http:
+                  paths:
+                    - path: /
+                      pathType: Prefix
+                      backend:
+                        service:
+                          name: ${{ env.APP_NAME }}-${{ github.ref_name }}
+                          port:
+                            number: 3000
+          EOF
+
+      - name: ⏳ Wait for deployment rollout
+        run: |
+          kubectl rollout status deployment/${{ env.APP_NAME }}-${{ github.ref_name }} -n ${{ env.NAMESPACE }} --timeout=5m
 
       - name: ✅ Health check
         run: |
+          SERVICE_IP=$(kubectl get service ${{ env.APP_NAME }}-${{ github.ref_name }} -n ${{ env.NAMESPACE }} -o jsonpath='{.spec.clusterIP}')
+
           for i in {1..30}; do
-            if curl -f http://localhost:$FRONTEND_PORT > /dev/null 2>&1; then
-              echo "Container is healthy"
+            if kubectl run -n ${{ env.NAMESPACE }} --rm -i --restart=Never curl-check -- curl -f "http://$SERVICE_IP:3000" > /dev/null 2>&1; then
+              echo "✅ Application is healthy"
               exit 0
             fi
-            echo "Attempt $i: Waiting for container..."
+            echo "Attempt $i: Waiting for application..."
             sleep 2
           done
-          echo "Container failed to start"
+
+          echo "❌ Application failed to start"
           exit 1
 
-      - name: 🗑️ Cleanup deployment directory
-        if: always()
+      - name: 🔍 Deployment status
+        if: success()
         run: |
-          rm -rf "$DEPLOY_PATH"
+          echo "### Deployment Status"
+          kubectl get deployment -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }}
+          echo ""
+          echo "### Pods"
+          kubectl get pods -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }},branch=${{ github.ref_name }} -o wide
+          echo ""
+          echo "### Services"
+          kubectl get svc -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }}
+          echo ""
+          echo "### Ingress"
+          kubectl get ingress -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }}
+
+      - name: 📊 Deployment summary
+        if: success()
+        run: |
+          {
+            echo "## 🎉 Portfolio Deployment Successful"
+            echo ""
+            echo "### Application Details"
+            echo "- **App**: ${{ env.APP_NAME }}-${{ github.ref_name }}"
+            echo "- **Branch**: ${{ github.ref_name }}"
+            echo "- **Image**: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+            echo "- **Namespace**: ${{ env.NAMESPACE }}"
+            echo ""
+            echo "### Access URLs"
+            echo "- **URL**: https://${{ github.ref_name == 'main' && 'portfolio.mithamo.cc' || 'dev-portfolio.mithamo.cc' }}"
+            echo ""
+            echo "### Kubernetes Resources"
+            echo "\`\`\`"
+            kubectl get deployment,svc,ingress -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }},branch=${{ github.ref_name }}
+            echo "\`\`\`"
+            echo ""
+            echo "### Pod Status"
+            echo "\`\`\`"
+            kubectl get pods -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }},branch=${{ github.ref_name }} -o wide
+            echo "\`\`\`"
+          } >> $GITHUB_STEP_SUMMARY

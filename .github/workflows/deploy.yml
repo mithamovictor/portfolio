@@ -11,7 +11,55 @@ env:
   APP_NAME: portfolio
 
 jobs:
+  validate-secrets:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔐 Validate required secrets and variables
+        run: |
+          MISSING_ITEMS=()
+
+          # Check KUBE_CONFIG secret
+          if [ -z "${{ secrets.KUBE_CONFIG }}" ]; then
+            MISSING_ITEMS+=("KUBE_CONFIG (secret)")
+          fi
+
+          # Check DEV_TO_API_KEY_PORTFOLIO secret
+          if [ -z "${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}" ]; then
+            MISSING_ITEMS+=("DEV_TO_API_KEY_PORTFOLIO (secret)")
+          fi
+
+          # Check BREVO_API_KEY_PORTFOLIO secret
+          if [ -z "${{ secrets.BREVO_API_KEY_PORTFOLIO }}" ]; then
+            MISSING_ITEMS+=("BREVO_API_KEY_PORTFOLIO (secret)")
+          fi
+
+          # Check DEV_TO_API_URL variable
+          if [ -z "${{ vars.DEV_TO_API_URL }}" ]; then
+            MISSING_ITEMS+=("DEV_TO_API_URL (variable)")
+          fi
+
+          if [ ${#MISSING_ITEMS[@]} -gt 0 ]; then
+            echo "❌ Missing required secrets/variables:"
+            printf '%s\n' "${MISSING_ITEMS[@]}"
+            echo ""
+            echo "📝 Please set the following in GitHub:"
+            echo "   Repository Settings → Secrets and Variables → Actions"
+            echo ""
+            echo "Required secrets:"
+            echo "  - KUBE_CONFIG: Your Kubernetes config file (base64 encoded)"
+            echo "  - DEV_TO_API_KEY_PORTFOLIO: Dev.to API key for portfolio"
+            echo "  - BREVO_API_KEY_PORTFOLIO: Brevo API key for email"
+            echo ""
+            echo "Required variables:"
+            echo "  - DEV_TO_API_URL: Dev.to API base URL"
+            exit 1
+          fi
+
+          echo "✅ All required secrets and variables are configured"
+
   code-security:
+    needs: validate-secrets
     runs-on: ubuntu-latest
 
     steps:
@@ -45,6 +93,7 @@ jobs:
           config: "p/ci"
 
   build:
+    needs: validate-secrets
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -81,6 +130,7 @@ jobs:
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
+          args: --skip-version-check
 
       - name: 📤 Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
@@ -95,9 +145,10 @@ jobs:
           format: 'table'
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
+          args: --skip-version-check
 
   deploy:
-    needs: [build, code-security]
+    needs: [code-security, build]
     runs-on: [self-hosted, alma9]
 
     concurrency:
@@ -128,6 +179,7 @@ jobs:
           kubectl create secret generic ${{ env.APP_NAME }}-env \
             --from-literal=BREVO_API_KEY="${{ secrets.BREVO_API_KEY_PORTFOLIO }}" \
             --from-literal=DEV_TO_API_KEY="${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}" \
+            --from-literal=DEV_TO_API_URL="${{ vars.DEV_TO_API_URL }}" \
             -n ${{ env.NAMESPACE }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
@@ -199,6 +251,11 @@ jobs:
                           secretKeyRef:
                             name: ${{ env.APP_NAME }}-env
                             key: DEV_TO_API_KEY
+                      - name: DEV_TO_API_URL
+                        valueFrom:
+                          secretKeyRef:
+                            name: ${{ env.APP_NAME }}-env
+                            key: DEV_TO_API_URL
                       - name: NODE_ENV
                         value: "production"
                     resources:
@@ -254,10 +311,10 @@ jobs:
           spec:
             tls:
               - hosts:
-                  - ${{ github.ref_name == 'main' && 'portfolio.mithamo.cc' || 'dev-portfolio.mithamo.cc' }}
+                  - mithamo.cc
                 secretName: ${{ env.APP_NAME }}-${{ github.ref_name }}-tls
             rules:
-              - host: ${{ github.ref_name == 'main' && 'portfolio.mithamo.cc' || 'dev-portfolio.mithamo.cc' }}
+              - host: mithamo.cc
                 http:
                   paths:
                     - path: /
@@ -364,7 +421,7 @@ jobs:
             echo "- **Namespace**: ${{ env.NAMESPACE }}"
             echo ""
             echo "### Access URLs"
-            echo "- **URL**: https://${{ github.ref_name == 'main' && 'portfolio.mithamo.cc' || 'dev-portfolio.mithamo.cc' }}"
+            echo "- **URL**: https://mithamo.cc"
           } >> $GITHUB_STEP_SUMMARY
 
   rollback:

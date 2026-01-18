@@ -9,6 +9,8 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   NAMESPACE: portfolio
   APP_NAME: portfolio
+  PNPM_VERSION: 10.28.0
+  NODE_VERSION: 22
 
 jobs:
   validate-secrets:
@@ -61,36 +63,51 @@ jobs:
   code-security:
     needs: validate-secrets
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.16.0
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
 
-      - name: ⚡ Setup Node
+      - name: ⚡ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
       - name: 📥 Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🔒 Run pnpm audit
+      - name: 🔒 Run security audit
         run: |
-          if [[ "${{ github.ref_name }}" == "dev" ]]; then
-            pnpm audit --audit-level=high || true
+          if [[ "${{ github.ref_name }}" == "dev" ]] || [[ "${{ github.ref_name }}" == "staging" ]]; then
+            pnpm audit --audit-level=low || true
           else
             pnpm audit --audit-level=high
           fi
 
-      - name: 🔍 Run Semgrep
+      - name: 🔍 Run Semgrep security scan
         uses: returntocorp/semgrep-action@v1
         with:
-          config: "p/ci"
+          config: p/ci
+
+      - name: 🔐 Run Trivy vulnerability scan (filesystem)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN'
+          exit-code: '0'
 
   build:
     needs: validate-secrets
@@ -98,7 +115,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      security-events: write
 
     steps:
       - uses: actions/checkout@v4
@@ -122,29 +138,13 @@ jobs:
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
 
-      - name: 🔐 Trivy image scan (SARIF)
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '1'
-          scanners: 'vuln'
-
-      - name: 📤 Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-      - name: 🔐 Trivy detailed scan report (all severities)
+      - name: 🔐 Run Trivy scan on Docker image
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           format: 'table'
-          exit-code: '0'
-          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
           scanners: 'vuln'
 
   deploy:

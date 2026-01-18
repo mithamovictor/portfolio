@@ -11,7 +11,7 @@ env:
   APP_NAME: portfolio
 
 jobs:
-  security-checks:
+  code-security:
     runs-on: ubuntu-latest
 
     steps:
@@ -45,7 +45,7 @@ jobs:
           config: "p/ci"
 
   build:
-    needs: security-checks
+    needs: code-security
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -73,8 +73,37 @@ jobs:
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
 
-  deploy:
+  container-security:
     needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: 🔐 Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: 📤 Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: 🔐 Trivy scan summary
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: 'table'
+          exit-code: '0'
+
+  deploy:
+    needs: [build, container-security]
     runs-on: [self-hosted, alma9]
 
     concurrency:
@@ -107,6 +136,27 @@ jobs:
             --from-literal=DEV_TO_API_KEY="${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}" \
             -n ${{ env.NAMESPACE }} \
             --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: 💾 Save current deployment state
+        id: previous-state
+        continue-on-error: true
+        run: |
+          DEPLOYMENT_NAME="${{ env.APP_NAME }}-${{ github.ref_name }}"
+          echo "deployment_name=$DEPLOYMENT_NAME" >> $GITHUB_OUTPUT
+
+          CURRENT_REPLICAS=$(kubectl get deployment $DEPLOYMENT_NAME -n ${{ env.NAMESPACE }} -o jsonpath='{.spec.replicas}' 2>/dev/null || echo "0")
+          CURRENT_IMAGE=$(kubectl get deployment $DEPLOYMENT_NAME -n ${{ env.NAMESPACE }} -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || echo "")
+
+          echo "current_replicas=$CURRENT_REPLICAS" >> $GITHUB_OUTPUT
+          echo "current_image=$CURRENT_IMAGE" >> $GITHUB_OUTPUT
+
+          if [ -n "$CURRENT_IMAGE" ]; then
+            echo "✅ Saved previous deployment state:"
+            echo "  - Replicas: $CURRENT_REPLICAS"
+            echo "  - Image: $CURRENT_IMAGE"
+          else
+            echo "ℹ️ No previous deployment found (first deployment)"
+          fi
 
       - name: 📦 Deploy to Kubernetes
         run: |
@@ -229,9 +279,25 @@ jobs:
         run: |
           kubectl rollout status deployment/${{ env.APP_NAME }}-${{ github.ref_name }} -n ${{ env.NAMESPACE }} --timeout=5m
 
-      - name: ✅ Health check
+  test-deployment:
+    needs: deploy
+    runs-on: [self-hosted, alma9]
+
+    steps:
+      - name: 🔧 Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: 🏗️ Configure kubectl context
         run: |
-          # Try to get Service IP, but also check if Service exists
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: ✅ Health check
+        id: health-check
+        run: |
           SERVICE_NAME="${{ env.APP_NAME }}-${{ github.ref_name }}"
           SERVICE_IP=$(kubectl get service $SERVICE_NAME -n ${{ env.NAMESPACE }} -o jsonpath='{.spec.clusterIP}' || echo "")
 
@@ -243,13 +309,11 @@ jobs:
 
           echo "Checking health at http://$SERVICE_IP:3000"
 
-          # Increase total wait time and add more diagnostics
           for i in {1..20}; do
             echo "Attempt $i: Waiting for application..."
-            # Use a temporary pod to curl the service IP
-            # We use --quiet to avoid extra kubectl noise, but keep curl verbose on failure
-            if kubectl run -n ${{ env.NAMESPACE }} --rm -i --restart=Never curl-check -- curl -v -f "http://$SERVICE_IP:3000" --connect-timeout 5; then
+            if kubectl run -n ${{ env.NAMESPACE }} --rm -i --restart=Never --image=curlimages/curl:latest curl-check-$i -- curl -s -f "http://$SERVICE_IP:3000" > /dev/null 2>&1; then
               echo "✅ Application is healthy"
+              echo "health_status=success" >> $GITHUB_OUTPUT
               exit 0
             fi
             echo "Retrying in 10 seconds..."
@@ -257,19 +321,24 @@ jobs:
           done
 
           echo "❌ Application failed to start or is unreachable after 200 seconds"
+          echo "health_status=failed" >> $GITHUB_OUTPUT
+          echo ""
           echo "--- POD STATUS ---"
           kubectl get pods -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }},branch=${{ github.ref_name }}
 
+          echo ""
           echo "--- SERVICE DETAILS ---"
           kubectl describe service $SERVICE_NAME -n ${{ env.NAMESPACE }}
 
+          echo ""
           echo "--- ENDPOINTS ---"
           kubectl get endpoints $SERVICE_NAME -n ${{ env.NAMESPACE }}
 
+          echo ""
           echo "--- RECENT POD LOGS ---"
           POD_NAME=$(kubectl get pods -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }},branch=${{ github.ref_name }} -o jsonpath='{.items[0].metadata.name}' || echo "")
           if [ -n "$POD_NAME" ]; then
-            kubectl logs $POD_NAME -n ${{ env.NAMESPACE }} --tail=100
+            kubectl logs $POD_NAME -n ${{ env.NAMESPACE }} --tail=50
           fi
           exit 1
 
@@ -313,3 +382,60 @@ jobs:
             kubectl get pods -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }},branch=${{ github.ref_name }} -o wide
             echo "\`\`\`"
           } >> $GITHUB_STEP_SUMMARY
+
+  rollback:
+    if: failure() && needs.test-deployment.result == 'failure'
+    needs: [deploy, test-deployment]
+    runs-on: [self-hosted, alma9]
+
+    steps:
+      - name: 🔧 Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: 🏗️ Configure kubectl context
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: 💾 Retrieve previous state
+        id: previous-state
+        continue-on-error: true
+        run: |
+          DEPLOYMENT_NAME="${{ env.APP_NAME }}-${{ github.ref_name }}"
+          echo "deployment_name=$DEPLOYMENT_NAME" >> $GITHUB_OUTPUT
+
+          CURRENT_IMAGE=$(kubectl get deployment $DEPLOYMENT_NAME -n ${{ env.NAMESPACE }} -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || echo "")
+
+          echo "current_image=$CURRENT_IMAGE" >> $GITHUB_OUTPUT
+
+          if [ -n "$CURRENT_IMAGE" ]; then
+            echo "Current deployment image: $CURRENT_IMAGE"
+          else
+            echo "No previous deployment found"
+          fi
+
+      - name: 🔄 Rollback deployment
+        if: steps.previous-state.outputs.current_image != ''
+        run: |
+          DEPLOYMENT_NAME="${{ steps.previous-state.outputs.deployment_name }}"
+
+          echo "⚠️ Deployment tests failed. Rolling back to previous version..."
+
+          kubectl rollout undo deployment/$DEPLOYMENT_NAME -n ${{ env.NAMESPACE }}
+
+          kubectl rollout status deployment/$DEPLOYMENT_NAME -n ${{ env.NAMESPACE }} --timeout=5m
+
+          echo "✅ Rollback completed successfully"
+          echo ""
+          echo "--- ROLLED BACK DEPLOYMENT STATUS ---"
+          kubectl get deployment $DEPLOYMENT_NAME -n ${{ env.NAMESPACE }} -o wide
+
+      - name: 🚨 Rollback notification
+        if: steps.previous-state.outputs.current_image == ''
+        run: |
+          echo "❌ Deployment tests failed and no previous version exists to rollback to."
+          echo "This was likely the first deployment. Please investigate the deployment logs above."
+          exit 1

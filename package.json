@@ -36,5 +36,14 @@
     "prettier": "^3.8.0",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "cross-spawn": "^7.0.5",
+      "glob": "^11.1.0",
+      "tar": "^7.5.3",
+      "brace-expansion": "^2.0.2",
+      "diff": "^8.0.3"
+    }
   }
 }

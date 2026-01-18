@@ -82,7 +82,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: 📤 Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
@@ -163,7 +163,7 @@ jobs:
               app: ${{ env.APP_NAME }}
               branch: ${{ github.ref_name }}
           spec:
-            replicas: 2
+            replicas: 1
             strategy:
               type: RollingUpdate
               rollingUpdate:
@@ -363,16 +363,6 @@ jobs:
             echo ""
             echo "### Access URLs"
             echo "- **URL**: https://${{ github.ref_name == 'main' && 'portfolio.mithamo.cc' || 'dev-portfolio.mithamo.cc' }}"
-            echo ""
-            echo "### Kubernetes Resources"
-            echo "\`\`\`"
-            kubectl get deployment,svc,ingress -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }},branch=${{ github.ref_name }}
-            echo "\`\`\`"
-            echo ""
-            echo "### Pod Status"
-            echo "\`\`\`"
-            kubectl get pods -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }},branch=${{ github.ref_name }} -o wide
-            echo "\`\`\`"
           } >> $GITHUB_STEP_SUMMARY
 
   rollback:

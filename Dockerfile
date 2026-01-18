@@ -5,7 +5,7 @@ WORKDIR /app
 
 RUN apk add --no-cache libc6-compat
 
-RUN npm install -g pnpm@10.16.0
+RUN npm install -g pnpm@10.28.0
 
 COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile
@@ -19,7 +19,7 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-RUN npm install -g pnpm@10.16.0
+RUN npm install -g pnpm@10.28.0
 
 ENV NODE_ENV=production
 

@@ -177,8 +177,8 @@ jobs:
       - name: 🔐 Create environment secret
         run: |
           kubectl create secret generic ${{ env.APP_NAME }}-env \
-            --from-literal=BREVO_API_KEY="${{ secrets.BREVO_API_KEY_PORTFOLIO }}" \
-            --from-literal=DEV_TO_API_KEY="${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}" \
+            --from-literal=BREVO_API_KEY_PORTFOLIO="${{ secrets.BREVO_API_KEY_PORTFOLIO }}" \
+            --from-literal=DEV_TO_API_KEY_PORTFOLIO="${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}" \
             --from-literal=DEV_TO_API_URL="${{ vars.DEV_TO_API_URL }}" \
             -n ${{ env.NAMESPACE }} \
             --dry-run=client -o yaml | kubectl apply -f -
@@ -241,16 +241,16 @@ jobs:
                       - name: http
                         containerPort: 3000
                     env:
-                      - name: BREVO_API_KEY
+                      - name: BREVO_API_KEY_PORTFOLIO
                         valueFrom:
                           secretKeyRef:
                             name: ${{ env.APP_NAME }}-env
-                            key: BREVO_API_KEY
-                      - name: DEV_TO_API_KEY
+                            key: BREVO_API_KEY_PORTFOLIO
+                      - name: DEV_TO_API_KEY_PORTFOLIO
                         valueFrom:
                           secretKeyRef:
                             name: ${{ env.APP_NAME }}-env
-                            key: DEV_TO_API_KEY
+                            key: DEV_TO_API_KEY_PORTFOLIO
                       - name: DEV_TO_API_URL
                         valueFrom:
                           secretKeyRef:

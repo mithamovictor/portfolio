@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import axios from 'axios';
 import { DevToArticle } from '@/app/components/PostsList';
 import { SendSmtpEmail, TransactionalEmailsApi } from '@getbrevo/brevo';
-const { DEV_TO_API_KEY_PORTFOLIO, BREVO_API_KEY_PORTFOLIO, DEV_TO_API_URL } = process.env;
+const { DEV_TO_API_KEY, BREVO_API_KEY, DEV_TO_API_URL } = process.env;
 
 type FormDataDetails = {
   firstName: string;
@@ -154,7 +154,7 @@ const sendSmtpEmail: (to: string, subject: string, htmlContent: string) => Promi
   htmlContent: string,
 ): Promise<void> => {
   const emailAPI = new TransactionalEmailsApi();
-  emailAPI.setApiKey(0, BREVO_API_KEY_PORTFOLIO || '');
+  emailAPI.setApiKey(0, BREVO_API_KEY || '');
 
   const smtpEmail = new SendSmtpEmail();
   smtpEmail.subject = subject;
@@ -179,7 +179,7 @@ const sendSmtpEmail: (to: string, subject: string, htmlContent: string) => Promi
 export const fetchPosts = async (): Promise<DevToArticle[] | undefined> => {
   try {
     const response = await axios.get(DEV_TO_API_URL || '', {
-      headers: { 'api-key': DEV_TO_API_KEY_PORTFOLIO },
+      headers: { 'api-key': DEV_TO_API_KEY },
     });
 
     return response.data;

@@ -2,7 +2,7 @@ name: Deploy Portfolio to Kubernetes
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main ]
 
 env:
   REGISTRY: ghcr.io
@@ -211,13 +211,13 @@ jobs:
           apiVersion: apps/v1
           kind: Deployment
           metadata:
-            name: ${{ env.APP_NAME }}-${{ github.ref_name }}
+            name: ${{ env.APP_NAME }}
             namespace: ${{ env.NAMESPACE }}
             labels:
               app: ${{ env.APP_NAME }}
               branch: ${{ github.ref_name }}
           spec:
-            replicas: 2
+            replicas: 1
             strategy:
               type: RollingUpdate
               rollingUpdate:
@@ -285,7 +285,7 @@ jobs:
           apiVersion: v1
           kind: Service
           metadata:
-            name: ${{ env.APP_NAME }}-${{ github.ref_name }}
+            name: ${{ env.APP_NAME }}
             namespace: ${{ env.NAMESPACE }}
             labels:
               app: ${{ env.APP_NAME }}
@@ -303,7 +303,7 @@ jobs:
           apiVersion: networking.k8s.io/v1
           kind: Ingress
           metadata:
-            name: ${{ env.APP_NAME }}-${{ github.ref_name }}
+            name: ${{ env.APP_NAME }}
             namespace: ${{ env.NAMESPACE }}
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -312,7 +312,7 @@ jobs:
             tls:
               - hosts:
                   - mithamo.cc
-                secretName: ${{ env.APP_NAME }}-${{ github.ref_name }}-tls
+                secretName: ${{ env.APP_NAME }}-tls
             rules:
               - host: mithamo.cc
                 http:
@@ -321,14 +321,14 @@ jobs:
                       pathType: Prefix
                       backend:
                         service:
-                          name: ${{ env.APP_NAME }}-${{ github.ref_name }}
+                          name: ${{ env.APP_NAME }}
                           port:
                             number: 3000
           EOF
 
       - name: ⏳ Wait for deployment rollout
         run: |
-          kubectl rollout status deployment/${{ env.APP_NAME }}-${{ github.ref_name }} -n ${{ env.NAMESPACE }} --timeout=5m
+          kubectl rollout status deployment/${{ env.APP_NAME }} -n ${{ env.NAMESPACE }} --timeout=5m
 
   test-deployment:
     needs: deploy
@@ -349,7 +349,7 @@ jobs:
       - name: ✅ Health check
         id: health-check
         run: |
-          SERVICE_NAME="${{ env.APP_NAME }}-${{ github.ref_name }}"
+          SERVICE_NAME="${{ env.APP_NAME }}"
           SERVICE_IP=$(kubectl get service $SERVICE_NAME -n ${{ env.NAMESPACE }} -o jsonpath='{.spec.clusterIP}' || echo "")
 
           if [ -z "$SERVICE_IP" ]; then
@@ -415,7 +415,7 @@ jobs:
             echo "## 🎉 Portfolio Deployment Successful"
             echo ""
             echo "### Application Details"
-            echo "- **App**: ${{ env.APP_NAME }}-${{ github.ref_name }}"
+            echo "- **App**: ${{ env.APP_NAME }}"
             echo "- **Branch**: ${{ github.ref_name }}"
             echo "- **Image**: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
             echo "- **Namespace**: ${{ env.NAMESPACE }}"
@@ -445,7 +445,7 @@ jobs:
         id: previous-state
         continue-on-error: true
         run: |
-          DEPLOYMENT_NAME="${{ env.APP_NAME }}-${{ github.ref_name }}"
+          DEPLOYMENT_NAME="${{ env.APP_NAME }}"
           echo "deployment_name=$DEPLOYMENT_NAME" >> $GITHUB_OUTPUT
 
           CURRENT_IMAGE=$(kubectl get deployment $DEPLOYMENT_NAME -n ${{ env.NAMESPACE }} -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || echo "")

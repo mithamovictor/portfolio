@@ -29,7 +29,9 @@ ENV NODE_ENV=production
 COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --prod --frozen-lockfile --shamefully-hoist --ignore-scripts
 
-COPY --from=builder /app/public ./public
+# Create public directory if it doesn't exist in builder and copy it
+RUN mkdir -p public
+COPY --from=builder /app/public* ./public/
 COPY --from=builder /app/.next ./.next
 
 EXPOSE 3000

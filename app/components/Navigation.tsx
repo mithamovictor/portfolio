@@ -1,37 +1,87 @@
 'use client';
 
 import { FC } from 'react';
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Stack from '@mui/material/Stack';
 
-const Navigation: FC = () => {
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/portfolio', label: 'Portfolio' },
+  { href: '/posts', label: 'Blog' },
+  { href: '/contact', label: 'Contact' },
+];
+
+interface NavigationProps {
+  direction?: 'row' | 'column';
+  onLinkClick?: () => void;
+}
+
+const Navigation: FC<NavigationProps> = ({ direction = 'row', onLinkClick }) => {
   const pathname = usePathname();
+  const isRow = direction === 'row';
 
   return (
-    <nav className={'flex flex-col'}>
-      <ul className={'flex flex-row gap-4'}>
-        <li>
-          <Link className={pathname === '/' ? 'font-bold' : ''} href={'/'}>
-            Home
-          </Link>
-        </li>
-        <li>
-          <Link className={pathname === '/portfolio' ? 'font-bold' : ''} href={'/portfolio'}>
-            Portfolio
-          </Link>
-        </li>
-        <li>
-          <Link className={pathname === '/posts' ? 'font-bold' : ''} href={'/posts'}>
-            Posts
-          </Link>
-        </li>
-        <li>
-          <Link className={pathname === '/contact' ? 'font-bold' : ''} href={'/contact'}>
-            Contact
-          </Link>
-        </li>
-      </ul>
-    </nav>
+    <Box component="nav">
+      <Stack
+        direction={direction}
+        flexWrap={isRow ? 'nowrap' : 'wrap'}
+        justifyContent={isRow ? 'center' : 'flex-start'}
+        spacing={isRow ? { xs: 0, sm: 1 } : 2}
+        sx={
+          isRow
+            ? {
+                overflowX: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                msOverflowStyle: 'none',
+                scrollbarWidth: 'none',
+                '&::-webkit-scrollbar': { display: 'none' },
+              }
+            : { px: 2, py: 4 }
+        }
+      >
+        {navLinks.map(({ href, label }) => {
+          const isActive = pathname === href;
+          return (
+            <Link
+              key={href}
+              component={NextLink}
+              href={href}
+              underline="none"
+              onClick={onLinkClick}
+              sx={{
+                position: 'relative',
+                px: isRow ? { xs: 1.5, sm: 2 } : 0,
+                py: 1,
+                fontWeight: 500,
+                color: isActive ? 'primary.main' : 'text.secondary',
+                whiteSpace: 'nowrap',
+                '&:hover': { color: isActive ? 'primary.main' : 'text.primary' },
+                '&::after':
+                  isActive && isRow
+                    ? {
+                        content: '""',
+                        position: 'absolute',
+                        bottom: 0,
+                        left: { xs: 8, sm: 12 },
+                        right: { xs: 8, sm: 12 },
+                        height: 2,
+                        bgcolor: 'primary.main',
+                      }
+                    : undefined,
+                borderLeft: isActive && !isRow ? 3 : 0,
+                borderColor: 'primary.main',
+                pl: isActive && !isRow ? 2 : 0,
+              }}
+            >
+              {label}
+            </Link>
+          );
+        })}
+      </Stack>
+    </Box>
   );
 };
 

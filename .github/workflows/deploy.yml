@@ -192,6 +192,8 @@ jobs:
             --from-literal=BREVO_API_KEY="$BREVO_API_KEY" \
             --from-literal=DEV_TO_API_KEY="$DEV_TO_API_KEY" \
             --from-literal=DEV_TO_API_URL="$DEV_TO_API_URL" \
+            --from-literal=BREVO_API_KEY_PORTFOLIO="$BREVO_API_KEY" \
+            --from-literal=DEV_TO_API_KEY_PORTFOLIO="$DEV_TO_API_KEY" \
             -n "$NAMESPACE" \
             --dry-run=client -o yaml | kubectl apply -f -
 
@@ -264,16 +266,26 @@ jobs:
                       - name: http
                         containerPort: 3000
                     env:
-                      - name: BREVO_API_KEY
-                        valueFrom:
-                          secretKeyRef:
-                            name: $APP_NAME-env
-                            key: BREVO_API_KEY
                       - name: DEV_TO_API_KEY
                         valueFrom:
                           secretKeyRef:
                             name: $APP_NAME-env
                             key: DEV_TO_API_KEY
+                      - name: DEV_TO_API_KEY_PORTFOLIO
+                        valueFrom:
+                          secretKeyRef:
+                            name: $APP_NAME-env
+                            key: DEV_TO_API_KEY_PORTFOLIO
+                      - name: BREVO_API_KEY
+                        valueFrom:
+                          secretKeyRef:
+                            name: $APP_NAME-env
+                            key: BREVO_API_KEY
+                      - name: BREVO_API_KEY_PORTFOLIO
+                        valueFrom:
+                          secretKeyRef:
+                            name: $APP_NAME-env
+                            key: BREVO_API_KEY_PORTFOLIO
                       - name: DEV_TO_API_URL
                         valueFrom:
                           secretKeyRef:

@@ -35,6 +35,7 @@ export interface DevToArticle {
   published_timestamp: string;
   body_markdown: string;
   positive_reactions_count: number;
+  social_image: string | null;
   cover_image: string | null;
   tag_list: string[];
   canonical_url: string;

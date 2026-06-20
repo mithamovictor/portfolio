@@ -13,6 +13,14 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'media2.dev.to',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.dev.to',
+      },
+      {
+        protocol: 'https',
         hostname: 'cdn.buymeacoffee.com',
       },
     ],

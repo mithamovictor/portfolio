@@ -36,12 +36,13 @@ const PostItem: FC<{ post: DevToArticle }> = ({ post }) => {
       }}
     >
       <Box sx={{ position: 'relative', pt: '56.25%', overflow: 'hidden' }}>
-        {post.cover_image ? (
+        {post.cover_image || post.social_image ? (
           <Image
-            src={post.cover_image}
+            src={post.cover_image || post.social_image || ''}
             alt={post.title}
             fill
             className="post-image"
+            unoptimized
             style={{
               objectFit: 'cover',
               transition: 'transform 0.5s ease',

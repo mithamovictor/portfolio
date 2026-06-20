@@ -9,8 +9,9 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   NAMESPACE: portfolio
   APP_NAME: portfolio
-  PNPM_VERSION: 10.28.0
-  NODE_VERSION: 22
+  PNPM_VERSION: 11.8.0
+  NODE_VERSION: 24
+  DEV_TO_API_URL: ${{ vars.DEV_TO_API_URL }}
 
 jobs:
   validate-secrets:
@@ -26,18 +27,18 @@ jobs:
             MISSING_ITEMS+=("KUBE_CONFIG (secret)")
           fi
 
-          # Check DEV_TO_API_KEY_PORTFOLIO secret
-          if [ -z "${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}" ]; then
-            MISSING_ITEMS+=("DEV_TO_API_KEY_PORTFOLIO (secret)")
+          # Check DEV_TO_API_KEY secret
+          if [ -z "${{ secrets.DEV_TO_API_KEY }}" ]; then
+            MISSING_ITEMS+=("DEV_TO_API_KEY (secret)")
           fi
 
-          # Check BREVO_API_KEY_PORTFOLIO secret
-          if [ -z "${{ secrets.BREVO_API_KEY_PORTFOLIO }}" ]; then
-            MISSING_ITEMS+=("BREVO_API_KEY_PORTFOLIO (secret)")
+          # Check BREVO_API_KEY secret
+          if [ -z "${{ secrets.BREVO_API_KEY }}" ]; then
+            MISSING_ITEMS+=("BREVO_API_KEY (secret)")
           fi
 
           # Check DEV_TO_API_URL variable
-          if [ -z "${{ vars.DEV_TO_API_URL }}" ]; then
+          if [ -z "${{ env.DEV_TO_API_URL }}" ]; then
             MISSING_ITEMS+=("DEV_TO_API_URL (variable)")
           fi
 
@@ -50,8 +51,8 @@ jobs:
             echo ""
             echo "Required secrets:"
             echo "  - KUBE_CONFIG: Your Kubernetes config file (base64 encoded)"
-            echo "  - DEV_TO_API_KEY_PORTFOLIO: Dev.to API key for portfolio"
-            echo "  - BREVO_API_KEY_PORTFOLIO: Brevo API key for email"
+            echo "  - DEV_TO_API_KEY: Dev.to API key for portfolio"
+            echo "  - BREVO_API_KEY: Brevo API key for email"
             echo ""
             echo "Required variables:"
             echo "  - DEV_TO_API_URL: Dev.to API base URL"
@@ -183,17 +184,15 @@ jobs:
       - name: 🔐 Create environment secret
         env:
           APP_NAME: ${{ env.APP_NAME }}
-          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY_PORTFOLIO }}
-          DEV_TO_API_KEY: ${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}
-          DEV_TO_API_URL: ${{ vars.DEV_TO_API_URL }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          DEV_TO_API_KEY: ${{ secrets.DEV_TO_API_KEY }}
+          DEV_TO_API_URL: ${{ env.DEV_TO_API_URL }}
           NAMESPACE: ${{ env.NAMESPACE }}
         run: |
           kubectl create secret generic "$APP_NAME-env" \
             --from-literal=BREVO_API_KEY="$BREVO_API_KEY" \
             --from-literal=DEV_TO_API_KEY="$DEV_TO_API_KEY" \
             --from-literal=DEV_TO_API_URL="$DEV_TO_API_URL" \
-            --from-literal=BREVO_API_KEY_PORTFOLIO="$BREVO_API_KEY" \
-            --from-literal=DEV_TO_API_KEY_PORTFOLIO="$DEV_TO_API_KEY" \
             -n "$NAMESPACE" \
             --dry-run=client -o yaml | kubectl apply -f -
 
@@ -266,26 +265,16 @@ jobs:
                       - name: http
                         containerPort: 3000
                     env:
-                      - name: DEV_TO_API_KEY
-                        valueFrom:
-                          secretKeyRef:
-                            name: $APP_NAME-env
-                            key: DEV_TO_API_KEY
-                      - name: DEV_TO_API_KEY_PORTFOLIO
-                        valueFrom:
-                          secretKeyRef:
-                            name: $APP_NAME-env
-                            key: DEV_TO_API_KEY_PORTFOLIO
                       - name: BREVO_API_KEY
                         valueFrom:
                           secretKeyRef:
                             name: $APP_NAME-env
                             key: BREVO_API_KEY
-                      - name: BREVO_API_KEY_PORTFOLIO
+                      - name: DEV_TO_API_KEY
                         valueFrom:
                           secretKeyRef:
                             name: $APP_NAME-env
-                            key: BREVO_API_KEY_PORTFOLIO
+                            key: DEV_TO_API_KEY
                       - name: DEV_TO_API_URL
                         valueFrom:
                           secretKeyRef:

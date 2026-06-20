@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useState, useMemo } from 'react';
+import { FC, useState, useMemo, ElementType } from 'react';
 import Image from 'next/image';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CloseIcon from '@mui/icons-material/Close';
@@ -19,10 +19,16 @@ import { FaJava, FaReact, FaNodeJs, FaPhp, FaLaravel, FaWordpress, FaJs, FaHtml5
 import { SiSpringboot, SiPostgresql, SiMysql, SiSocketdotio, SiJquery, SiJavascript } from 'react-icons/si';
 import { MdVideoLibrary, MdCode } from 'react-icons/md';
 
+import { IconType } from 'react-icons';
+import { SxProps, Theme } from '@mui/material/styles';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { surfaceElevated } from '@/app/constants';
 
-const techIconMap: Record<string, FC<never>> = {
+interface IconProps {
+  sx?: SxProps<Theme>;
+}
+
+const techIconMap: Record<string, IconType | ElementType<IconProps>> = {
   java: FaJava,
   'spring boot': SiSpringboot,
   react: FaReact,
@@ -69,7 +75,7 @@ const PortfolioItem: FC<{
   const stackIcons = useMemo(() => {
     return stack.split(',').map((s) => ({
       name: s.trim(),
-      Icon: getTechIcon(s) as FC<{ sx?: never }>,
+      Icon: getTechIcon(s) as ElementType<IconProps>,
     }));
   }, [stack]);
 

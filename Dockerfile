@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -17,7 +17,7 @@ COPY . .
 RUN pnpm build
 
 # Stage 2: Runtime
-FROM node:20-alpine AS runner
+FROM node:24-alpine AS runner
 
 WORKDIR /app
 
@@ -27,7 +27,7 @@ ENV NODE_ENV=production
 
 # Install only production dependencies with overrides applied
 COPY package.json pnpm-lock.yaml* ./
-RUN pnpm install --prod --frozen-lockfile --shamefully-hoist
+RUN pnpm install --prod --frozen-lockfile --shamefully-hoist --ignore-scripts
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next

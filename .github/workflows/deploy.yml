@@ -221,17 +221,24 @@ jobs:
           fi
 
       - name: 📦 Deploy to Kubernetes
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+          NAMESPACE: ${{ env.NAMESPACE }}
+          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
         run: |
           kubectl apply -f - <<EOF
           ---
           apiVersion: apps/v1
           kind: Deployment
           metadata:
-            name: ${{ env.APP_NAME }}
-            namespace: ${{ env.NAMESPACE }}
+            name: $APP_NAME
+            namespace: $NAMESPACE
             labels:
-              app: ${{ env.APP_NAME }}
-              branch: ${{ github.ref_name }}
+              app: $APP_NAME
+              branch: $GITHUB_REF_NAME
           spec:
             replicas: 1
             strategy:
@@ -241,17 +248,17 @@ jobs:
                 maxUnavailable: 0
             selector:
               matchLabels:
-                app: ${{ env.APP_NAME }}
-                branch: ${{ github.ref_name }}
+                app: $APP_NAME
+                branch: $GITHUB_REF_NAME
             template:
               metadata:
                 labels:
-                  app: ${{ env.APP_NAME }}
-                  branch: ${{ github.ref_name }}
+                  app: $APP_NAME
+                  branch: $GITHUB_REF_NAME
               spec:
                 containers:
-                  - name: ${{ env.APP_NAME }}
-                    image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+                  - name: $APP_NAME
+                    image: $REGISTRY/$IMAGE_NAME:$GITHUB_SHA
                     imagePullPolicy: Always
                     ports:
                       - name: http
@@ -260,17 +267,17 @@ jobs:
                       - name: BREVO_API_KEY
                         valueFrom:
                           secretKeyRef:
-                            name: ${{ env.APP_NAME }}-env
+                            name: $APP_NAME-env
                             key: BREVO_API_KEY
                       - name: DEV_TO_API_KEY
                         valueFrom:
                           secretKeyRef:
-                            name: ${{ env.APP_NAME }}-env
+                            name: $APP_NAME-env
                             key: DEV_TO_API_KEY
                       - name: DEV_TO_API_URL
                         valueFrom:
                           secretKeyRef:
-                            name: ${{ env.APP_NAME }}-env
+                            name: $APP_NAME-env
                             key: DEV_TO_API_URL
                       - name: NODE_ENV
                         value: "production"
@@ -301,16 +308,16 @@ jobs:
           apiVersion: v1
           kind: Service
           metadata:
-            name: ${{ env.APP_NAME }}
-            namespace: ${{ env.NAMESPACE }}
+            name: $APP_NAME
+            namespace: $NAMESPACE
             labels:
-              app: ${{ env.APP_NAME }}
-              branch: ${{ github.ref_name }}
+              app: $APP_NAME
+              branch: $GITHUB_REF_NAME
           spec:
             type: ClusterIP
             selector:
-              app: ${{ env.APP_NAME }}
-              branch: ${{ github.ref_name }}
+              app: $APP_NAME
+              branch: $GITHUB_REF_NAME
             ports:
               - name: http
                 port: 3000
@@ -319,8 +326,10 @@ jobs:
           apiVersion: networking.k8s.io/v1
           kind: Ingress
           metadata:
-            name: ${{ env.APP_NAME }}
-            namespace: ${{ env.NAMESPACE }}
+            name: $APP_NAME
+            namespace: $NAMESPACE
+            labels:
+              app: $APP_NAME
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
               kubernetes.io/ingress.class: nginx
@@ -328,7 +337,7 @@ jobs:
             tls:
               - hosts:
                   - mithamo.cc
-                secretName: ${{ env.APP_NAME }}-tls
+                secretName: $APP_NAME-tls
             rules:
               - host: mithamo.cc
                 http:
@@ -337,7 +346,7 @@ jobs:
                       pathType: Prefix
                       backend:
                         service:
-                          name: ${{ env.APP_NAME }}
+                          name: $APP_NAME
                           port:
                             number: 3000
           EOF
@@ -503,9 +512,8 @@ jobs:
         if: steps.previous-state.outputs.current_image != ''
         env:
           NAMESPACE: ${{ env.NAMESPACE }}
+          DEPLOYMENT_NAME: ${{ steps.previous-state.outputs.deployment_name }}
         run: |
-          DEPLOYMENT_NAME="${{ steps.previous-state.outputs.deployment_name }}"
-
           echo "⚠️ Deployment tests failed. Rolling back to previous version..."
 
           kubectl rollout undo deployment/"$DEPLOYMENT_NAME" -n "$NAMESPACE"

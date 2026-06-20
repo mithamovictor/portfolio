@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "prepare": "husky"
+    "prepare": "test -n \"$CI\" || husky"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",

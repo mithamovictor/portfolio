@@ -2,88 +2,92 @@
 
 import { FC, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
-import { FaPaperPlane, FaSpinner } from 'react-icons/fa';
+import SendIcon from '@mui/icons-material/Send';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import { submitContactForm } from '@/app/actions/ContactFormAction';
+import SectionHeading from '@/app/components/SectionHeading';
 
 const ContactFormSubmitButton: FC = () => {
   const { pending } = useFormStatus();
-
   return (
-    <button
-      className={
-        'flex flex-row items-center justify-center w-full md:w-40 text-center bg-[#a066cb] text-white hover:text-white active:text-white p-2 mt-8 rounded-md shadow-lg md:text-base'
-      }
+    <Button
+      type="submit"
+      variant="contained"
       disabled={pending}
-      type={'submit'}
+      startIcon={pending ? <CircularProgress size={18} color="inherit" /> : <SendIcon />}
     >
-      {pending ? (
-        <>
-          <FaSpinner className={'animate-spin mr-2'} /> Sending...
-        </>
-      ) : (
-        <>
-          <FaPaperPlane className={'mr-2'} /> Send
-        </>
-      )}
-    </button>
+      {pending ? 'Sending...' : 'Send'}
+    </Button>
   );
 };
 
 const Contact: FC = () => {
   const ref = useRef<HTMLFormElement>(null);
-
   return (
-    <>
-      <h2 className={'text-3xl text-center uppercase mb-4'}>Contact</h2>
-
-      <form
-        ref={ref}
-        action={async (formData: FormData) => {
-          await submitContactForm(formData);
-          ref.current?.reset();
-        }}
-        id={'contact_form'}
-        className={'grid grid-cols-1 md:grid-cols-2 gap-4 items-start justify-between'}
-      >
-        <input
-          className={'border-0 border-b border-gray-300 p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1'}
-          type={'text'}
-          name={'firstName'}
-          id={'firstName'}
-          placeholder={'First Name'}
-          required
-        />
-        <input
-          className={'border-0 border-b border-gray-300 p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1'}
-          type={'text'}
-          name={'lastName'}
-          id={'lastName'}
-          placeholder={'Last Name'}
-          required
-        />
-        <input
-          className={
-            'border-0 border-b border-gray-300 p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1 md:col-span-2'
-          }
-          type={'email'}
-          name={'email'}
-          id={'email'}
-          placeholder={'Email'}
-          required
-        />
-        <textarea
-          className={
-            'border-0 border-b border-gray-300 p-2 rounded-md w-full focus:outline-0 focus:ring-0 col-span-1 md:col-span-2'
-          }
-          name={'message'}
-          id={'message'}
-          rows={8}
-          placeholder={'Message'}
-          required
-        />
-        <ContactFormSubmitButton />
-      </form>
-    </>
+    <Box py={{ xs: 6, sm: 8 }}>
+      <Container maxWidth="md">
+        <SectionHeading title="Contact" subtitle="Book a consultation or send a message" />
+        <Grid container spacing={8}>
+          <Grid size={{ xs: 12, md: 5 }}>
+            <Box sx={{ bgcolor: 'background.paper', p: 4, borderRadius: 4, height: '100%' }}>
+              <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, color: 'primary.main' }}>
+                Free Consultation
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary', lineHeight: 1.7 }}>
+                Looking to discuss a new project, legacy system modernization, or a code audit? Book a free 30-minute
+                consultation directly in my calendar.
+              </Typography>
+              <Button
+                variant="contained"
+                fullWidth
+                size="large"
+                startIcon={<EventAvailableIcon />}
+                href="https://calendly.com/hello-mithamo/30min"
+                target="_blank"
+                sx={{ py: 2, fontWeight: 700 }}
+              >
+                Schedule on Calendly
+              </Button>
+            </Box>
+          </Grid>
+          <Grid size={{ xs: 12, md: 7 }}>
+            <Box
+              component="form"
+              ref={ref}
+              action={async (formData) => {
+                await submitContactForm(formData);
+                ref.current?.reset();
+              }}
+            >
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <TextField fullWidth name="firstName" label="First Name" required />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <TextField fullWidth name="lastName" label="Last Name" required />
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <TextField fullWidth name="email" label="Email" type="email" required />
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <TextField fullWidth name="message" label="Message" multiline rows={6} required />
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <ContactFormSubmitButton />
+                </Grid>
+              </Grid>
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 };
 

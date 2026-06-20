@@ -1,47 +1,151 @@
 import { FC } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { DevToArticle } from '@/app/components/PostsList';
 import logo from '@/app/images/logo/vic_logo_4.png';
+import { surfaceElevated } from '@/app/constants';
 
-interface PostItemProps {
-  post: DevToArticle;
-}
-
-const PostItem: FC<PostItemProps> = ({ post }) => {
-  const hasCover = Boolean(post.cover_image);
+const PostItem: FC<{ post: DevToArticle }> = ({ post }) => {
+  const date = new Date(post.published_at);
+  const day = date.getDate();
+  const month = date.toLocaleString('default', { month: 'short' }).toUpperCase();
 
   return (
-    <article className='flex flex-col md:flex-row'>
-      {hasCover ? (
-        <Image
-          src={post.cover_image as string} // external URL
-          alt={post.title}
-          width={640}
-          height={360}
-          className='w-full md:w-1/2 object-cover'
-        />
-      ) : (
-        <Image
-          src={logo} // local fallback
-          alt='Default cover'
-          width={640}
-          height={360}
-          className='w-full md:w-1/2 object-cover'
-        />
-      )}
+    <Box
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        bgcolor: 'background.paper',
+        borderRadius: 4,
+        overflow: 'hidden',
+        border: '1px solid rgba(15, 52, 96, 0.3)',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'translateY(-8px)',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+          borderColor: 'rgba(255, 183, 3, 0.3)',
+          '& .post-image': {
+            transform: 'scale(1.1)',
+          },
+        },
+      }}
+    >
+      <Box sx={{ position: 'relative', pt: '56.25%', overflow: 'hidden' }}>
+        {post.cover_image ? (
+          <Image
+            src={post.cover_image}
+            alt={post.title}
+            fill
+            className="post-image"
+            style={{
+              objectFit: 'cover',
+              transition: 'transform 0.5s ease',
+            }}
+          />
+        ) : (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              bgcolor: surfaceElevated,
+            }}
+          >
+            <Image src={logo} alt="Default cover" width={60} height={60} style={{ opacity: 0.3 }} />
+          </Box>
+        )}
+      </Box>
 
-      <div className='pl-0 pt-4 md:pt-0 md:pl-4 flex flex-col justify-between md:w-1/2'>
-        <div>
-          <h3 className='text-lg font-semibold'>{post.title}</h3>
-          <p className='text-gray-600 mt-2'>{post.description}</p>
-        </div>
+      <Box sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+        <Stack direction="row" spacing={1} mb={2}>
+          {post.tag_list.slice(0, 2).map((tag) => (
+            <Typography
+              key={tag}
+              variant="caption"
+              sx={{
+                color: 'primary.main',
+                textTransform: 'uppercase',
+              }}
+            >
+              #{tag}
+            </Typography>
+          ))}
+        </Stack>
 
-        <Link className='mt-4 hover:text-red-600' href={post.url} target='_blank' rel='noopener noreferrer'>
-          Read more →
-        </Link>
-      </div>
-    </article>
+        <Typography
+          variant="h6"
+          component="h3"
+          sx={{
+            fontWeight: 700,
+            lineHeight: 1.4,
+            mb: 2,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
+          {post.title}
+        </Typography>
+
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            mb: 3,
+            lineHeight: 1.6,
+          }}
+        >
+          {post.description}
+        </Typography>
+
+        <Box
+          sx={{
+            mt: 'auto',
+            pt: 2,
+            borderTop: '1px solid rgba(15, 52, 96, 0.3)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+            {month} {day}, {date.getFullYear()}
+          </Typography>
+          <Link
+            href={post.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              color: 'primary.main',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              fontWeight: 700,
+              fontSize: '0.875rem',
+              textDecoration: 'none',
+              '&:hover': { color: 'text.primary' },
+            }}
+          >
+            READ MORE <ArrowForwardIcon sx={{ fontSize: 16 }} />
+          </Link>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import axios from 'axios';
 import { DevToArticle } from '@/app/components/PostsList';
 import { SendSmtpEmail, TransactionalEmailsApi } from '@getbrevo/brevo';
-const { DEV_TO_API_KEY, BREVO_API_KEY, DEV_TO_API_URL } = process.env;
+const { DEV_TO_API_KEY_PORTFOLIO, BREVO_API_KEY_PORTFOLIO, DEV_TO_API_URL } = process.env;
 
 type FormDataDetails = {
   firstName: string;
@@ -87,60 +87,102 @@ const sendNotification: (formDataDetails: FormDataDetails) => Promise<void> = as
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Contact Message</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
     <style>
-      body { font-family: Arial, Helvetica, sans-serif; color: #111; padding: 20px; }
-      .container { max-width: 680px; margin: 0 auto; }
-      .details { background:#f9f9f9; padding:12px; border-radius:6px; }
-      .label { font-weight:700; }
-      .message { white-space: pre-wrap; margin-top:8px; }
+      body { font-family: 'Sora', 'Inter', Arial, sans-serif; background-color: #16213e; color: #F8FAFC; padding: 20px; margin: 0; }
+      .container { max-width: 600px; margin: 0 auto; background-color: #0f3460; border-radius: 16px; border: 1px solid rgba(15, 52, 96, 0.5); overflow: hidden; }
+      .header { background-color: rgba(22, 33, 62, 0.8); padding: 30px; text-align: center; border-bottom: 1px solid rgba(255, 183, 3, 0.1); }
+      .logo { font-family: 'Tangerine', cursive; font-size: 24px; font-weight: 700; color: #ffb703; text-decoration: none; }
+      .content { padding: 40px; }
+      .details { background: rgba(22, 33, 62, 0.5); padding: 24px; border-radius: 12px; border: 1px solid rgba(15, 52, 96, 0.3); }
+      .label { font-weight: 700; color: #ffb703; display: block; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+      .value { color: #F8FAFC; margin-bottom: 20px; font-size: 16px; }
+      .message { white-space: pre-wrap; color: #F8FAFC; line-height: 1.6; }
+      .footer { text-align: center; padding: 20px; color: #94A3B8; font-size: 12px; }
     </style>
   </head>
   <body>
     <div class="container">
-      <p>Hi Victor,</p>
-
-      <p>Please receive the following message via your portfolio contact form:</p>
-
-      <div class="details">
-        <p><span class="label">Name:</span> ${escapeHtml(name)}</p>
-        <p><span class="label">Email:</span> ${escapeHtml(email)}</p>
-        <p><span class="label">Message:</span></p>
-        <div class="message">${escapeHtml(message)}</div>
+      <div class="header">
+        <div class="logo">Mithamo Victor</div>
       </div>
+      <div class="content">
+        <h2 style="color: #ffb703; margin-top: 0;">New Inquiry</h2>
+        <p style="color: #94A3B8; margin-bottom: 30px;">You have received a new message from your portfolio site.</p>
 
-      <p>Regards,<br/>${escapeHtml(name)}</p>
+        <div class="details">
+          <span class="label">From</span>
+          <div class="value">${escapeHtml(name)}</div>
+
+          <span class="label">Email</span>
+          <div class="value">${escapeHtml(email)}</div>
+
+          <span class="label">Message</span>
+          <div class="message">${escapeHtml(message)}</div>
+        </div>
+      </div>
+      <div class="footer">
+        &copy; ${new Date().getFullYear()} Mithamo Victor. Internal Notification.
+      </div>
     </div>
   </body>
 </html>
 `.trim();
 
   const responseEmail = `
-  <!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Thank You</title>
-</head>
-<body style="font-family: Arial, sans-serif; background-color: #f9fafb; padding: 20px; color: #333;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-    <tr>
-      <td style="padding: 30px; text-align: center;">
-        <h2 style="color: #111827; margin-bottom: 20px;">Thank You for Reaching Out!</h2>
-        <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Thank You - Mithamo Victor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      body { font-family: 'Sora', 'Inter', Arial, sans-serif; background-color: #16213e; color: #F8FAFC; padding: 20px; margin: 0; }
+      .container { max-width: 600px; margin: 0 auto; background-color: #0f3460; border-radius: 16px; border: 1px solid rgba(15, 52, 96, 0.5); overflow: hidden; }
+      .header { background-color: rgba(22, 33, 62, 0.8); padding: 40px; text-align: center; border-bottom: 1px solid rgba(255, 183, 3, 0.1); }
+      .logo { font-family: 'Tangerine', cursive; font-size: 32px; font-weight: 700; color: #ffb703; text-decoration: none; }
+      .content { padding: 40px; text-align: center; }
+      .thank-you { font-size: 24px; font-weight: 700; color: #ffb703; margin-bottom: 16px; }
+      .text { color: #94A3B8; line-height: 1.8; margin-bottom: 30px; font-size: 16px; }
+      .button-container { margin: 40px 0; }
+      .button { background-color: #ffb703; color: #000000; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-block; }
+      .footer { text-align: center; padding: 30px; color: #94A3B8; font-size: 12px; border-top: 1px solid rgba(15, 52, 96, 0.3); }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo">Mithamo Victor</div>
+      </div>
+      <div class="content">
+        <div class="thank-you">Thank You for Reaching Out!</div>
+        <p class="text">
           Hi <strong>${firstName}</strong>,<br><br>
-          I’ve received your message through my contact form. I truly appreciate you taking the time to reach out.
+          I&apos;ve received your message and I appreciate you taking the time to connect.
+          Whether it&apos;s about a new project, a technical challenge, or just to say hi,
+          I&apos;ll get back to you as soon as possible.
         </p>
-        <p style="font-size: 16px; line-height: 1.5; margin-bottom: 30px;">
-          I’ll get back to you as soon as possible.
-        </p>
-        <p style="font-size: 14px; color: #6b7280; margin-top: 20px;">
-          Regards,<br>
-          Victor Mithamo
-        </p>
-      </td>
-    </tr>
-  </table>
-</body>
+        <div class="button-container">
+          <a href="https://mithamo.dev" class="button" style="background-color: transparent; border: 1px solid #ffb703; color: #ffb703;">Visit My Portfolio</a>
+          <a href="https://calendly.com/hello-mithamo/30min" class="button" style="background-color: transparent; border: 1px solid #ffb703; color: #ffb703; margin-left: 10px;">Schedule a Call</a>
+        </div>
+        <div style="margin-top: 20px;">
+          <a href="https://www.buymeacoffee.com/vmithamo" target="_blank" style="text-decoration: none;">
+            <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important; width: 145px !important;">
+          </a>
+        </div>
+      </div>
+      <div class="footer">
+        Enterprise-grade Java backends, modern React frontends.<br>
+        &copy; ${new Date().getFullYear()} Victor Mithamo. All rights reserved.
+      </div>
+    </div>
+  </body>
 </html>
   `.trim();
 
@@ -154,7 +196,7 @@ const sendSmtpEmail: (to: string, subject: string, htmlContent: string) => Promi
   htmlContent: string,
 ): Promise<void> => {
   const emailAPI = new TransactionalEmailsApi();
-  emailAPI.setApiKey(0, BREVO_API_KEY || '');
+  emailAPI.setApiKey(0, BREVO_API_KEY_PORTFOLIO || '');
 
   const smtpEmail = new SendSmtpEmail();
   smtpEmail.subject = subject;
@@ -179,7 +221,7 @@ const sendSmtpEmail: (to: string, subject: string, htmlContent: string) => Promi
 export const fetchPosts = async (): Promise<DevToArticle[] | undefined> => {
   try {
     const response = await axios.get(DEV_TO_API_URL || '', {
-      headers: { 'api-key': DEV_TO_API_KEY },
+      headers: { 'api-key': DEV_TO_API_KEY_PORTFOLIO },
     });
 
     return response.data;

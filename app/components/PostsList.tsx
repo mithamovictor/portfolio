@@ -1,6 +1,10 @@
 'use client';
 
 import { FC, useEffect, useState } from 'react';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import PostItem from '@/app/components/PostItem';
 import { fetchPosts } from '@/app/actions/ContactFormAction';
 
@@ -21,14 +25,14 @@ export interface DevToArticle {
   title: string;
   description: string;
   published: boolean;
-  published_at: string; // ISO date string
+  published_at: string;
   slug: string;
   path: string;
   url: string;
   comments_count: number;
   public_reactions_count: number;
   page_views_count: number;
-  published_timestamp: string; // ISO date string
+  published_timestamp: string;
   body_markdown: string;
   positive_reactions_count: number;
   cover_image: string | null;
@@ -40,29 +44,39 @@ export interface DevToArticle {
 
 const PostsList: FC<{ isHome: boolean }> = ({ isHome }) => {
   const [postsList, setPostsList] = useState<DevToArticle[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadPosts = async () => {
-      try {
-        const allPosts = (await fetchPosts()) ?? [];
-        const publishedPosts = allPosts.filter((post) => post.published);
-
-        setPostsList(isHome ? publishedPosts.slice(0, 4) : publishedPosts);
-      } catch (error) {
-        console.error('Error loading posts:', error);
-        setPostsList([]);
-      }
-    };
-
-    loadPosts();
+    fetchPosts()
+      .then((allPosts) => {
+        const published = (allPosts ?? []).filter((p) => p.published);
+        setPostsList(isHome ? published.slice(0, 3) : published);
+      })
+      .catch(() => setPostsList([]))
+      .finally(() => setLoading(false));
   }, [isHome]);
 
+  if (loading)
+    return (
+      <Box display="flex" justifyContent="center" py={6}>
+        <CircularProgress color="primary" />
+      </Box>
+    );
+  if (postsList.length === 0)
+    return (
+      <Typography textAlign="center" color="text.secondary" py={4}>
+        No posts available at the moment.
+      </Typography>
+    );
+
   return (
-    <div className={'grid grid-cols-1 gap-4 items-start justify-between'}>
-      {postsList.map((post: DevToArticle) => (
-        <PostItem key={post.id} post={post} />
+    <Grid container spacing={4}>
+      {postsList.map((post) => (
+        <Grid key={post.id} size={{ xs: 12, md: 6, lg: 4 }}>
+          <PostItem post={post} />
+        </Grid>
       ))}
-    </div>
+    </Grid>
   );
 };
 

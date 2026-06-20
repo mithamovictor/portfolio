@@ -1,27 +1,32 @@
 import { FC } from 'react';
-import Link from 'next/link';
-import { FaLinkedin } from 'react-icons/fa6';
-import { FaGithub } from 'react-icons/fa';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
 
 const Socials: FC = () => (
-  <>
-    <Link
-      className={'text-2xl'}
-      href={'https://github.com/mithamovictor'}
-      target={'_blank'}
-      rel={'noopener noreferrer'}
+  <Stack direction="row" spacing={1.5}>
+    <IconButton
+      component="a"
+      href="https://github.com/mithamovictor"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="GitHub"
+      sx={{ border: 1, borderColor: 'divider', color: 'primary.main' }}
     >
-      <FaGithub />
-    </Link>
-    <Link
-      className={'text-2xl'}
-      href={'https://www.linkedin.com/in/mithamovictor/'}
-      target={'_blank'}
-      rel={'noopener noreferrer'}
+      <GitHubIcon fontSize="small" />
+    </IconButton>
+    <IconButton
+      component="a"
+      href="https://www.linkedin.com/in/mithamovictor/"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="LinkedIn"
+      sx={{ border: 1, borderColor: 'divider', color: 'primary.main' }}
     >
-      <FaLinkedin />
-    </Link>
-  </>
+      <LinkedInIcon fontSize="small" />
+    </IconButton>
+  </Stack>
 );
 
 export default Socials;

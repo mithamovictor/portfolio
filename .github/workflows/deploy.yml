@@ -2,7 +2,7 @@ name: Deploy Portfolio to Kubernetes
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 env:
   REGISTRY: ghcr.io
@@ -88,8 +88,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: 🔒 Run security audit
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
         run: |
-          if [[ "${{ github.ref_name }}" == "dev" ]] || [[ "${{ github.ref_name }}" == "staging" ]]; then
+          if [[ "$GITHUB_REF_NAME" == "dev" ]] || [[ "$GITHUB_REF_NAME" == "staging" ]]; then
             pnpm audit --audit-level=low || true
           else
             pnpm audit --audit-level=high
@@ -164,34 +166,48 @@ jobs:
           version: 'v1.28.0'
 
       - name: 🏗️ Configure kubectl context
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          echo "$KUBE_CONFIG" | base64 -d > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
           kubectl cluster-info
 
       - name: 📝 Create namespace
+        env:
+          NAMESPACE: ${{ env.NAMESPACE }}
         run: |
-          kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
 
       - name: 🔐 Create environment secret
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY_PORTFOLIO }}
+          DEV_TO_API_KEY: ${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}
+          DEV_TO_API_URL: ${{ vars.DEV_TO_API_URL }}
+          NAMESPACE: ${{ env.NAMESPACE }}
         run: |
-          kubectl create secret generic ${{ env.APP_NAME }}-env \
-            --from-literal=BREVO_API_KEY="${{ secrets.BREVO_API_KEY_PORTFOLIO }}" \
-            --from-literal=DEV_TO_API_KEY="${{ secrets.DEV_TO_API_KEY_PORTFOLIO }}" \
-            --from-literal=DEV_TO_API_URL="${{ vars.DEV_TO_API_URL }}" \
-            -n ${{ env.NAMESPACE }} \
+          kubectl create secret generic "$APP_NAME-env" \
+            --from-literal=BREVO_API_KEY="$BREVO_API_KEY" \
+            --from-literal=DEV_TO_API_KEY="$DEV_TO_API_KEY" \
+            --from-literal=DEV_TO_API_URL="$DEV_TO_API_URL" \
+            -n "$NAMESPACE" \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: 💾 Save current deployment state
         id: previous-state
         continue-on-error: true
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          NAMESPACE: ${{ env.NAMESPACE }}
         run: |
-          DEPLOYMENT_NAME="${{ env.APP_NAME }}-${{ github.ref_name }}"
+          DEPLOYMENT_NAME="$APP_NAME-$GITHUB_REF_NAME"
           echo "deployment_name=$DEPLOYMENT_NAME" >> $GITHUB_OUTPUT
 
-          CURRENT_REPLICAS=$(kubectl get deployment $DEPLOYMENT_NAME -n ${{ env.NAMESPACE }} -o jsonpath='{.spec.replicas}' 2>/dev/null || echo "0")
-          CURRENT_IMAGE=$(kubectl get deployment $DEPLOYMENT_NAME -n ${{ env.NAMESPACE }} -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || echo "")
+          CURRENT_REPLICAS=$(kubectl get deployment "$DEPLOYMENT_NAME" -n "$NAMESPACE" -o jsonpath='{.spec.replicas}' 2>/dev/null || echo "0")
+          CURRENT_IMAGE=$(kubectl get deployment "$DEPLOYMENT_NAME" -n "$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || echo "")
 
           echo "current_replicas=$CURRENT_REPLICAS" >> $GITHUB_OUTPUT
           echo "current_image=$CURRENT_IMAGE" >> $GITHUB_OUTPUT
@@ -327,8 +343,11 @@ jobs:
           EOF
 
       - name: ⏳ Wait for deployment rollout
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+          NAMESPACE: ${{ env.NAMESPACE }}
         run: |
-          kubectl rollout status deployment/${{ env.APP_NAME }} -n ${{ env.NAMESPACE }} --timeout=5m
+          kubectl rollout status deployment/"$APP_NAME" -n "$NAMESPACE" --timeout=5m
 
   test-deployment:
     needs: deploy
@@ -341,20 +360,26 @@ jobs:
           version: 'v1.28.0'
 
       - name: 🏗️ Configure kubectl context
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          echo "$KUBE_CONFIG" | base64 -d > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
 
       - name: ✅ Health check
         id: health-check
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+          NAMESPACE: ${{ env.NAMESPACE }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
         run: |
-          SERVICE_NAME="${{ env.APP_NAME }}"
-          SERVICE_IP=$(kubectl get service $SERVICE_NAME -n ${{ env.NAMESPACE }} -o jsonpath='{.spec.clusterIP}' || echo "")
+          SERVICE_NAME="$APP_NAME"
+          SERVICE_IP=$(kubectl get service "$SERVICE_NAME" -n "$NAMESPACE" -o jsonpath='{.spec.clusterIP}' || echo "")
 
           if [ -z "$SERVICE_IP" ]; then
             echo "❌ Could not find Service IP for $SERVICE_NAME"
-            kubectl get svc -n ${{ env.NAMESPACE }}
+            kubectl get svc -n "$NAMESPACE"
             exit 1
           fi
 
@@ -362,7 +387,7 @@ jobs:
 
           for i in {1..20}; do
             echo "Attempt $i: Waiting for application..."
-            if kubectl run -n ${{ env.NAMESPACE }} --rm -i --restart=Never --image=curlimages/curl:latest curl-check-$i -- curl -s -f "http://$SERVICE_IP:3000" > /dev/null 2>&1; then
+            if kubectl run -n "$NAMESPACE" --rm -i --restart=Never --image=curlimages/curl:latest curl-check-$i -- curl -s -f "http://$SERVICE_IP:3000" > /dev/null 2>&1; then
               echo "✅ Application is healthy"
               echo "health_status=success" >> $GITHUB_OUTPUT
               exit 0
@@ -375,50 +400,61 @@ jobs:
           echo "health_status=failed" >> $GITHUB_OUTPUT
           echo ""
           echo "--- POD STATUS ---"
-          kubectl get pods -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }},branch=${{ github.ref_name }}
+          kubectl get pods -n "$NAMESPACE" -l app="$APP_NAME",branch="$GITHUB_REF_NAME"
 
           echo ""
           echo "--- SERVICE DETAILS ---"
-          kubectl describe service $SERVICE_NAME -n ${{ env.NAMESPACE }}
+          kubectl describe service "$SERVICE_NAME" -n "$NAMESPACE"
 
           echo ""
           echo "--- ENDPOINTS ---"
-          kubectl get endpoints $SERVICE_NAME -n ${{ env.NAMESPACE }}
+          kubectl get endpoints "$SERVICE_NAME" -n "$NAMESPACE"
 
           echo ""
           echo "--- RECENT POD LOGS ---"
-          POD_NAME=$(kubectl get pods -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }},branch=${{ github.ref_name }} -o jsonpath='{.items[0].metadata.name}' || echo "")
+          POD_NAME=$(kubectl get pods -n "$NAMESPACE" -l app="$APP_NAME",branch="$GITHUB_REF_NAME" -o jsonpath='{.items[0].metadata.name}' || echo "")
           if [ -n "$POD_NAME" ]; then
-            kubectl logs $POD_NAME -n ${{ env.NAMESPACE }} --tail=50
+            kubectl logs "$POD_NAME" -n "$NAMESPACE" --tail=50
           fi
           exit 1
 
       - name: 🔍 Deployment status
         if: success()
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+          NAMESPACE: ${{ env.NAMESPACE }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
         run: |
           echo "### Deployment Status"
-          kubectl get deployment -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }}
+          kubectl get deployment -n "$NAMESPACE" -l app="$APP_NAME"
           echo ""
           echo "### Pods"
-          kubectl get pods -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }},branch=${{ github.ref_name }} -o wide
+          kubectl get pods -n "$NAMESPACE" -l app="$APP_NAME",branch="$GITHUB_REF_NAME" -o wide
           echo ""
           echo "### Services"
-          kubectl get svc -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }}
+          kubectl get svc -n "$NAMESPACE" -l app="$APP_NAME"
           echo ""
           echo "### Ingress"
-          kubectl get ingress -n ${{ env.NAMESPACE }} -l app=${{ env.APP_NAME }}
+          kubectl get ingress -n "$NAMESPACE" -l app="$APP_NAME"
 
       - name: 📊 Deployment summary
         if: success()
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_SHA: ${{ github.sha }}
+          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          NAMESPACE: ${{ env.NAMESPACE }}
         run: |
           {
             echo "## 🎉 Portfolio Deployment Successful"
             echo ""
             echo "### Application Details"
-            echo "- **App**: ${{ env.APP_NAME }}"
-            echo "- **Branch**: ${{ github.ref_name }}"
-            echo "- **Image**: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-            echo "- **Namespace**: ${{ env.NAMESPACE }}"
+            echo "- **App**: $APP_NAME"
+            echo "- **Branch**: $GITHUB_REF_NAME"
+            echo "- **Image**: $REGISTRY/$IMAGE_NAME:$GITHUB_SHA"
+            echo "- **Namespace**: $NAMESPACE"
             echo ""
             echo "### Access URLs"
             echo "- **URL**: https://mithamo.cc"
@@ -436,19 +472,24 @@ jobs:
           version: 'v1.28.0'
 
       - name: 🏗️ Configure kubectl context
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          echo "$KUBE_CONFIG" | base64 -d > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
 
       - name: 💾 Retrieve previous state
         id: previous-state
         continue-on-error: true
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+          NAMESPACE: ${{ env.NAMESPACE }}
         run: |
-          DEPLOYMENT_NAME="${{ env.APP_NAME }}"
+          DEPLOYMENT_NAME="$APP_NAME"
           echo "deployment_name=$DEPLOYMENT_NAME" >> $GITHUB_OUTPUT
 
-          CURRENT_IMAGE=$(kubectl get deployment $DEPLOYMENT_NAME -n ${{ env.NAMESPACE }} -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || echo "")
+          CURRENT_IMAGE=$(kubectl get deployment "$DEPLOYMENT_NAME" -n "$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || echo "")
 
           echo "current_image=$CURRENT_IMAGE" >> $GITHUB_OUTPUT
 
@@ -460,19 +501,21 @@ jobs:
 
       - name: 🔄 Rollback deployment
         if: steps.previous-state.outputs.current_image != ''
+        env:
+          NAMESPACE: ${{ env.NAMESPACE }}
         run: |
           DEPLOYMENT_NAME="${{ steps.previous-state.outputs.deployment_name }}"
 
           echo "⚠️ Deployment tests failed. Rolling back to previous version..."
 
-          kubectl rollout undo deployment/$DEPLOYMENT_NAME -n ${{ env.NAMESPACE }}
+          kubectl rollout undo deployment/"$DEPLOYMENT_NAME" -n "$NAMESPACE"
 
-          kubectl rollout status deployment/$DEPLOYMENT_NAME -n ${{ env.NAMESPACE }} --timeout=5m
+          kubectl rollout status deployment/"$DEPLOYMENT_NAME" -n "$NAMESPACE" --timeout=5m
 
           echo "✅ Rollback completed successfully"
           echo ""
           echo "--- ROLLED BACK DEPLOYMENT STATUS ---"
-          kubectl get deployment $DEPLOYMENT_NAME -n ${{ env.NAMESPACE }} -o wide
+          kubectl get deployment "$DEPLOYMENT_NAME" -n "$NAMESPACE" -o wide
 
       - name: 🚨 Rollback notification
         if: steps.previous-state.outputs.current_image == ''
